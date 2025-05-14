@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "priorities",
+  "info": {
+    "singularName": "priority",
+    "pluralName": "priorities",
+    "displayName": "Priority"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "priorityLevel": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    }
+  }
+}

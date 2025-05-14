@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tasks",
+  "info": {
+    "singularName": "task",
+    "pluralName": "tasks",
+    "displayName": "Task",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Description": {
+      "type": "text"
+    },
+    "dueDate": {
+      "type": "datetime"
+    },
+    "project": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::project.project",
+      "inversedBy": "task"
+    },
+    "taskStatus": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::status.status"
+    },
+    "priority": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::priority.priority"
+    },
+    "assignee": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::team-member.team-member",
+      "inversedBy": "task"
+    }
+  }
+}
