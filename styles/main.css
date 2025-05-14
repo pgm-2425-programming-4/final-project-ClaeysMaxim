@@ -1,7 +1,8 @@
+@import "reset.css";
 @import "components/base.css";
 
 @import "components/layout.css";
-@import "components/icons.css"; /* Add this new line for our custom icons */
+@import "components/icons.css";
 
 @import "components/sidebar.css";
 @import "components/header.css";
@@ -14,3 +15,21 @@
 @import "components/pagination.css";
 
 @import "components/responsive.css";
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("../styles/font/Ubuntu-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("../styles/font/Ubuntu-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+body {
+  font-family: "Ubuntu", Arial, sans-serif;
+}
