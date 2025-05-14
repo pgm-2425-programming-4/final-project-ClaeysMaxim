@@ -1,0 +1,37 @@
+/* Button styles */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 14px;
+}
+
+.button .icon {
+  margin-right: 8px;
+  /* Adjusted this from targeting i elements to targeting our custom icons */
+}
+
+.button--primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.button--primary:hover {
+  background-color: #2980b9;
+}
+
+.button--secondary {
+  background-color: #34495e;
+  color: #ecf0f1;
+  width: 100%;
+}
+
+.button--secondary:hover {
+  background-color: #2c3e50;
+}

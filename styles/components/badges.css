@@ -1,0 +1,56 @@
+/* Status and priority badges styles */
+
+/* Status badges */
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-badge--todo {
+  background-color: #edf2f7;
+  color: #4a5568;
+}
+
+.status-badge--progress {
+  background-color: #ebf8ff;
+  color: #2b6cb0;
+}
+
+.status-badge--review {
+  background-color: #faf5ff;
+  color: #6b46c1;
+}
+
+.status-badge--done {
+  background-color: #f0fff4;
+  color: #2f855a;
+}
+
+/* Priority badges */
+.priority-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.priority-badge--high {
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+}
+
+.priority-badge--medium {
+  background-color: #fffaf0;
+  color: #dd6b20;
+  border: 1px solid #fbd38d;
+}
+
+.priority-badge--low {
+  background-color: #f0fff4;
+  color: #38a169;
+  border: 1px solid #9ae6b4;
+}

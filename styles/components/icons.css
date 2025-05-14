@@ -1,0 +1,44 @@
+/* SVG Icon styles */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 12px;
+}
+
+.icon img {
+  width: 100%;
+  height: 100%;
+}
+
+/* (#3498db) */
+.project-list__icon img {
+  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(190deg)
+    brightness(118%) contrast(95%);
+}
+
+/* (white) */
+.button--secondary .icon img {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%)
+    contrast(103%);
+}
+
+/* (white) */
+.button--primary .icon img {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%)
+    contrast(103%);
+}
+
+.task-card__menu .icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 0;
+  color: #a0aec0;
+}
+
+.task-card__menu .icon img {
+  filter: invert(80%) sepia(11%) saturate(236%) hue-rotate(169deg)
+    brightness(90%) contrast(90%);
+}

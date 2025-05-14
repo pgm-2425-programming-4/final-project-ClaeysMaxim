@@ -1,0 +1,16 @@
+@import "components/base.css";
+
+@import "components/layout.css";
+@import "components/icons.css"; /* Add this new line for our custom icons */
+
+@import "components/sidebar.css";
+@import "components/header.css";
+@import "components/buttons.css";
+@import "components/backlog.css";
+@import "components/task-table.css";
+@import "components/kanban.css";
+@import "components/task-card.css";
+@import "components/badges.css";
+@import "components/pagination.css";
+
+@import "components/responsive.css";

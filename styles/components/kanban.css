@@ -1,0 +1,52 @@
+/* Kanban Board styles */
+.kanban {
+  padding: 30px;
+  overflow-x: auto;
+}
+
+.kanban__board {
+  display: flex;
+  gap: 20px;
+  min-height: calc(100vh - 180px);
+}
+
+.kanban__column {
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  min-width: 300px;
+  width: 300px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban__column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.kanban__column-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.kanban__column-count {
+  background-color: #e2e8f0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.kanban__tasks {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}

@@ -1,0 +1,33 @@
+/* Backlog styles */
+.backlog {
+  padding: 30px;
+}
+
+.backlog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.backlog__title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.backlog__filter {
+  display: flex;
+  gap: 10px;
+}
+
+.backlog__search,
+.backlog__dropdown {
+  padding: 8px 12px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.backlog__search {
+  width: 250px;
+}

@@ -1,0 +1,31 @@
+/* Task table styles */
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.task-table__header {
+  background-color: #f5f7fa;
+  text-align: left;
+}
+
+.task-table__header th {
+  padding: 15px;
+  font-weight: 600;
+  color: #7f8c8d;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.task-table__body td {
+  padding: 15px;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.task-table__row:hover {
+  background-color: #f8f9fa;
+}

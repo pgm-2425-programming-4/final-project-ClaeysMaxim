@@ -1,0 +1,62 @@
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .kanban__board {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .backlog__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .backlog__filter {
+    width: 100%;
+  }
+
+  .backlog__search {
+    flex: 1;
+  }
+
+  .task-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .header__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .backlog__filter {
+    flex-direction: column;
+  }
+
+  .pagination {
+    flex-direction: column;
+  }
+}
