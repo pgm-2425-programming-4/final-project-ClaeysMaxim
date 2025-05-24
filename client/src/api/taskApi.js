@@ -1,5 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN;
+import { API_URL, API_TOKEN } from "../constants/constants";
 
 export const fetchTasks = async (page = 1, pageSize = 10) => {
   try {
@@ -7,7 +6,7 @@ export const fetchTasks = async (page = 1, pageSize = 10) => {
 
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${STRAPI_TOKEN}`,
+        Authorization: `Bearer ${API_TOKEN}`,
       },
     });
 
