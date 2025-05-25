@@ -17,8 +17,7 @@ const PaginatedBacklog = () => {
     setCurrentPage(pageNumber);
   };
 
-  const apiPageCount = data?.meta?.pagination?.pageCount || 1;
-  const totalPages = Math.max(apiPageCount, 3);
+  const totalPages = data?.meta?.pagination?.pageCount || 1;
 
   return (
     <section className="backlog">
