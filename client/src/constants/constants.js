@@ -1,0 +1,7 @@
+export const API_URL = import.meta.env.PROD
+  ? "https://final-project-claeysmaxim.onrender.com/api"
+  : "http://localhost:3000/api";
+
+export const API_TOKEN = import.meta.env.PROD
+  ? "8d9f71be354a5e1fd9dda6ee621fcdcc545629bb32d0b0ac91c05dd358dce0ed4269e7fe7f74a995079591d5fc1da1fbb6725b15ad31917fc320fec0ce08e9405854ce438a2ba5ed26039ab9d9b491b185e7a3f2e7764b5d85bbf66d2bdc15d7c131dde6494038705b15fc1d95ee260a0abe3f19d163e783914af54faea29beb"
+  : "4b216da7b77f8f5a44f1e1e03ce0116aee5e45a2019d8f49767c17ad862aa4b6c55e6420d74431a307a036621edb9e9ebae4e12c747ac5fc408bb4b29209c2c932b5ba1249eeb860337593d172a977b511112b807e04dde5b2ebbb426af9a4cb7f668bc01c792e507a4cf88c3f8708c60ca96824528878cb61329f3a68993b5e";
