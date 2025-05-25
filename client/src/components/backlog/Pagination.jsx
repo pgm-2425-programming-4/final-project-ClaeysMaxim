@@ -23,7 +23,7 @@ const Pagination = ({ currentPage, totalPages, onPageChanged }) => {
       for (let i = 1; i <= 4; i++) {
         items.push(renderPaginationItem(i));
       }
-      items.push(renderEllipsis());
+      items.push(renderEllipsis("start"));
       items.push(renderPaginationItem(totalPages));
       return items;
     }
@@ -31,7 +31,7 @@ const Pagination = ({ currentPage, totalPages, onPageChanged }) => {
     // Current page is among the last three pages
     if (currentPage >= totalPages - 2) {
       items.push(renderPaginationItem(1));
-      items.push(renderEllipsis());
+      items.push(renderEllipsis("end"));
       for (let i = totalPages - 3; i <= totalPages; i++) {
         items.push(renderPaginationItem(i));
       }
@@ -40,11 +40,11 @@ const Pagination = ({ currentPage, totalPages, onPageChanged }) => {
 
     // Current page is in the middle
     items.push(renderPaginationItem(1));
-    items.push(renderEllipsis());
+    items.push(renderEllipsis("start"));
     items.push(renderPaginationItem(currentPage - 1));
     items.push(renderPaginationItem(currentPage));
     items.push(renderPaginationItem(currentPage + 1));
-    items.push(renderEllipsis());
+    items.push(renderEllipsis("end"));
     items.push(renderPaginationItem(totalPages));
     return items;
   };
@@ -61,8 +61,8 @@ const Pagination = ({ currentPage, totalPages, onPageChanged }) => {
     </span>
   );
 
-  const renderEllipsis = () => (
-    <span key={`ellipsis-${Math.random()}`} className="pagination__ellipsis">
+  const renderEllipsis = (position) => (
+    <span key={`ellipsis-${position}`} className="pagination__ellipsis">
       &hellip;
     </span>
   );
