@@ -173,7 +173,6 @@ function MainContent({ activeProjectId }) {
 
       <PaginatedBacklog projectId={activeProjectId} />
 
-      {/* Task Form Modal */}
       {isTaskModalOpen && (
         <TaskFormModal
           onClose={handleCloseModal}
