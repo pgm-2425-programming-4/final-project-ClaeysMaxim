@@ -5,7 +5,8 @@ import {
 } from "@tanstack/react-query";
 import PaginatedBacklog from "./components/backlog/PaginatedBacklog";
 import { fetchProjects } from "./api/projectApi";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import TaskFormModal from "./components/tasks/TaskFormModal";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -108,6 +109,8 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
 }
 
 function MainContent({ activeProjectId }) {
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+
   // Fetch the projects data to find the active project
   const { data: projectsData } = useQuery({
     queryKey: ["projects"],
@@ -129,6 +132,14 @@ function MainContent({ activeProjectId }) {
       : "Inactive Project"
     : "";
 
+  const handleAddTaskClick = () => {
+    setIsTaskModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsTaskModalOpen(false);
+  };
+
   return (
     <main className="main">
       <header className="header">
@@ -148,7 +159,10 @@ function MainContent({ activeProjectId }) {
               Kanban
             </button>
           </div>
-          <button className="button button--primary">
+          <button
+            className="button button--primary"
+            onClick={handleAddTaskClick}
+          >
             <span className="icon">
               <img src="/styles/images/icons/plus.svg" alt="Add" />
             </span>
@@ -158,6 +172,15 @@ function MainContent({ activeProjectId }) {
       </header>
 
       <PaginatedBacklog projectId={activeProjectId} />
+
+      {/* Task Form Modal */}
+      {isTaskModalOpen && (
+        <TaskFormModal
+          onClose={handleCloseModal}
+          currentProjectId={activeProjectId}
+          projects={projectsData?.data || []}
+        />
+      )}
 
       {/* Kanban View (hidden by default) */}
       <section className="kanban" style={{ display: "none" }}>
