@@ -23,9 +23,9 @@
     },
     "project": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::project.project",
-      "inversedBy": "task"
+      "inversedBy": "tasks"
     },
     "taskStatus": {
       "type": "relation",

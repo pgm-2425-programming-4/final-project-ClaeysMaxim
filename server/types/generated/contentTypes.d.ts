@@ -427,7 +427,6 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     ProjectName: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    task: Schema.Attribute.Relation<'oneToOne', 'api::task.task'>;
     tasks: Schema.Attribute.Relation<'oneToMany', 'api::task.task'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -490,7 +489,7 @@ export interface ApiTaskTask extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::task.task'> &
       Schema.Attribute.Private;
     priority: Schema.Attribute.Relation<'oneToOne', 'api::priority.priority'>;
-    project: Schema.Attribute.Relation<'oneToOne', 'api::project.project'>;
+    project: Schema.Attribute.Relation<'manyToOne', 'api::project.project'>;
     publishedAt: Schema.Attribute.DateTime;
     taskStatus: Schema.Attribute.Relation<'oneToOne', 'api::status.status'>;
     Title: Schema.Attribute.String & Schema.Attribute.Required;
