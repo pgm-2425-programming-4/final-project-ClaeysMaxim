@@ -1,8 +1,15 @@
 import { API_URL, API_TOKEN } from "../constants/constants";
 
-export const fetchTasks = async (page = 1, pageSize = 10) => {
+export const fetchTasks = async (page = 1, pageSize = 10, projectId = null) => {
   try {
-    const url = `${API_URL}/tasks?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+    if (!projectId) {
+      return {
+        data: [],
+        meta: { pagination: { page, pageSize, pageCount: 0, total: 0 } },
+      };
+    }
+
+    const url = `${API_URL}/tasks?pagination[page]=${page}&pagination[pageSize]=${pageSize}&populate=*&filters[project][id][$eq]=${projectId}`;
 
     const response = await fetch(url, {
       headers: {
@@ -18,6 +25,9 @@ export const fetchTasks = async (page = 1, pageSize = 10) => {
     return data;
   } catch (error) {
     console.error("Error fetching tasks:", error);
-    throw error;
+    return {
+      data: [],
+      meta: { pagination: { page, pageSize, pageCount: 0, total: 0 } },
+    };
   }
 };
