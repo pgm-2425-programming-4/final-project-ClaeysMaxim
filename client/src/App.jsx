@@ -119,17 +119,22 @@ function MainContent({ activeProjectId }) {
     (project) => project.id === activeProjectId
   );
 
-  // The data doesn't have an 'attributes' object - it's directly on the project
-  const projectName =
-    activeProject?.ProjectName ||
-    (activeProjectId ? `Project ${activeProjectId}` : "No Project Selected");
+  const projectName = activeProject?.ProjectName || "No Project Selected";
+
+  // Only show status if we have an active project
+  const isActive = activeProject?.isActive;
+  const statusText = activeProject
+    ? isActive
+      ? "Active Project"
+      : "Inactive Project"
+    : "";
 
   return (
     <main className="main">
       <header className="header">
         <div className="header__project">
           <h1 className="header__title">{projectName}</h1>
-          <span className="header__subtitle">Active Project</span>
+          <span className="header__subtitle">{statusText}</span>
         </div>
         <div className="header__actions">
           <div className="header__view-toggle">
