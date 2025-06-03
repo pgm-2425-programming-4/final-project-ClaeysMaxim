@@ -3,18 +3,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createTask } from "../../api/taskApi";
 import { fetchStatuses, fetchPriorities } from "../../api/referenceDataApi";
 
-/**
- * TaskFormModal - A component for adding new tasks
- *
- * This modal allows users to create tasks with the following fields:
- * - Title (required)
- * - Description
- * - Due Date and Time
- * - Status (relation to Status collection)
- * - Priority (relation to Priority collection)
- * - Project (relation to Project collection, required)
- */
-function TaskFormModal({ onClose, currentProjectId, projects }) {
+function AddTaskForm({ onClose, currentProjectId, projects }) {
   const queryClient = useQueryClient();
 
   // Form state with default values
@@ -57,7 +46,6 @@ function TaskFormModal({ onClose, currentProjectId, projects }) {
     }
   }, [statusesData, prioritiesData]);
 
-  // 3. HANDLE FORM SUBMISSION
   const createTaskMutation = useMutation({
     mutationFn: createTask,
     onSuccess: () => {
@@ -79,14 +67,9 @@ function TaskFormModal({ onClose, currentProjectId, projects }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Form validation
+    // Only validate required fields
     if (!formData.Title.trim()) {
       setError("Title is required");
-      return;
-    }
-
-    if (!formData.project) {
-      setError("Project is required");
       return;
     }
 
@@ -113,12 +96,10 @@ function TaskFormModal({ onClose, currentProjectId, projects }) {
     createTaskMutation.mutate(submitData);
   };
 
-  // 4. RENDER THE FORM
   return (
     <div
       className="add-task-overlay"
       onClick={(e) => {
-        // Close modal when clicking on backdrop
         if (e.target === e.currentTarget) onClose();
       }}
     >
@@ -284,4 +265,4 @@ function TaskFormModal({ onClose, currentProjectId, projects }) {
   );
 }
 
-export default TaskFormModal;
+export default AddTaskForm;
