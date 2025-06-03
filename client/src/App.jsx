@@ -6,7 +6,8 @@ import {
 import PaginatedBacklog from "./components/backlog/PaginatedBacklog";
 import { fetchProjects } from "./api/projectApi";
 import { useState } from "react";
-import TaskFormModal from "./components/tasks/TaskFormModal";
+import AddTaskForm from "./components/tasks/AddTaskForm";
+import AddProjectForm from "./components/projects/AddProjectForm";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -19,6 +20,7 @@ const queryClient = new QueryClient({
 });
 
 function ProjectSidebar({ activeProjectId, onProjectSelect }) {
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const {
     data: projectsData,
     isLoading,
@@ -36,6 +38,14 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
   // Handle project selection
   const handleProjectClick = (projectId) => {
     onProjectSelect(projectId);
+  };
+
+  const handleAddProjectClick = () => {
+    setIsProjectModalOpen(true);
+  };
+
+  const handleCloseProjectModal = () => {
+    setIsProjectModalOpen(false);
   };
 
   if (isLoading)
@@ -96,7 +106,10 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
         </ul>
 
         <div className="sidebar__actions">
-          <button className="button button--secondary">
+          <button
+            className="button button--secondary"
+            onClick={handleAddProjectClick}
+          >
             <span className="icon">
               <img src="/styles/images/icons/plus.svg" alt="Add" />
             </span>
@@ -104,6 +117,10 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
           </button>
         </div>
       </nav>
+
+      {isProjectModalOpen && (
+        <AddProjectForm onClose={handleCloseProjectModal} />
+      )}
     </aside>
   );
 }
@@ -174,7 +191,7 @@ function MainContent({ activeProjectId }) {
       <PaginatedBacklog projectId={activeProjectId} />
 
       {isTaskModalOpen && (
-        <TaskFormModal
+        <AddTaskForm
           onClose={handleCloseModal}
           currentProjectId={activeProjectId}
           projects={projectsData?.data || []}

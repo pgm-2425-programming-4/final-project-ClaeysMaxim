@@ -35,6 +35,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
+  color: #333;
 }
 
 .add-task__close {
@@ -58,6 +59,7 @@
   display: block;
   margin-bottom: 6px;
   font-weight: 500;
+  color: #333;
 }
 
 .add-task-form__control {
@@ -66,6 +68,8 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  color: #333;
+  background-color: white;
 }
 
 .add-task-form__control--textarea {
