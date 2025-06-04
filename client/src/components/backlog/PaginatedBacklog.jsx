@@ -13,10 +13,14 @@ const PaginatedBacklog = ({ projectId }) => {
     setCurrentPage(1);
   }, [projectId]);
 
+  // Make sure projectId is a number for the API
+  const numericProjectId =
+    typeof projectId === "string" ? parseInt(projectId, 10) : projectId;
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tasks", currentPage, projectId],
-    queryFn: () => fetchTasks(currentPage, pageSize, projectId),
-    enabled: !!projectId,
+    queryKey: ["tasks", currentPage, numericProjectId],
+    queryFn: () => fetchTasks(currentPage, pageSize, numericProjectId),
+    enabled: !!numericProjectId, // Only run the query if we have a projectId
   });
 
   const handlePageChanged = (pageNumber) => {

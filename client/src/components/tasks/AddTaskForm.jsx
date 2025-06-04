@@ -3,7 +3,8 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createTask } from "../../api/taskApi";
 import { fetchStatuses, fetchPriorities } from "../../api/referenceDataApi";
 
-function AddTaskForm({ onClose, currentProjectId, projects }) {
+// Hernoem de component
+function TaskForm({ onClose, currentProjectId, projects }) {
   const queryClient = useQueryClient();
 
   // Form state with default values
@@ -55,7 +56,6 @@ function AddTaskForm({ onClose, currentProjectId, projects }) {
     },
     onError: (err) => {
       setError("Error creating task. Please try again.");
-      console.error(err);
     },
   });
 
@@ -265,4 +265,5 @@ function AddTaskForm({ onClose, currentProjectId, projects }) {
   );
 }
 
-export default AddTaskForm;
+// Hernoem de export
+export default TaskForm;
