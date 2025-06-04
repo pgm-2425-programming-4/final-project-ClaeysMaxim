@@ -39,19 +39,12 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
   } = useQuery({
     queryKey: ["projects"],
     queryFn: fetchProjects,
-    onSuccess: (data) => {
-      if (!activeProjectId && data?.data?.length > 0) {
-        onProjectSelect(data.data[0].id);
-      }
-    },
   });
 
   const deleteProjectMutation = useMutation({
     mutationFn: deleteProject,
-    onSuccess: async (result) => {
+    onSuccess: async () => {
       const deletedProjectId = confirmDialog.projectId;
-
-      console.log(`✅ Project ${deletedProjectId} deleted successfully`);
 
       // Force immediate refetch to ensure fresh data
       await refetchProjects();
@@ -65,7 +58,7 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
       setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
     },
     onError: (error) => {
-      console.error("❌ Delete failed:", error);
+      console.error("Delete failed:", error);
       setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
     },
   });
@@ -81,7 +74,6 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
 
   const handleCloseProjectModal = () => {
     setIsProjectModalOpen(false);
-    // Refetch projects when modal closes to show new projects
     refetchProjects();
   };
 
