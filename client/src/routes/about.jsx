@@ -21,12 +21,23 @@ function AboutComponent() {
             <strong>Naam:</strong> Maxim Claeys
           </p>
           <p>
-            <strong>Email:</strong> maxim.claeys@student.artevelde.be
+            <strong>Email:</strong>{" "}
+            <a
+              href="mailto:maxim.claeys@student.artevelde.be"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              maxim.claeys@student.arteveldehs.be
+            </a>
           </p>
           <p>
             <strong>LinkedIn:</strong>{" "}
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              linkedin.com/in/maxim-claeys
+            <a
+              href="https://www.linkedin.com/in/maxim-claeys-871404237/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Maxim Claeys
             </a>
           </p>
         </div>
