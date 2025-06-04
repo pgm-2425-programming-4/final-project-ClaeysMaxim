@@ -1,16 +1,12 @@
 import { API_URL, API_TOKEN } from "../constants/constants";
 
-export const fetchTasks = async (page = 1, pageSize = 10, projectId = null) => {
+export const fetchTasks = async (page = 1, pageSize = 10, projectId) => {
   try {
-    // If no project is selected, return empty data
-    if (!projectId) {
-      return {
-        data: [],
-        meta: { pagination: { page, pageSize, pageCount: 0, total: 0 } },
-      };
-    }
+    let url = `${API_URL}/tasks?pagination[page]=${page}&pagination[pageSize]=${pageSize}&populate=*`;
 
-    const url = `${API_URL}/tasks?pagination[page]=${page}&pagination[pageSize]=${pageSize}&populate=*&filters[project][id][$eq]=${projectId}`;
+    if (projectId) {
+      url += `&filters[project][id][$eq]=${projectId}`;
+    }
 
     const response = await fetch(url, {
       headers: {
@@ -22,7 +18,8 @@ export const fetchTasks = async (page = 1, pageSize = 10, projectId = null) => {
       throw new Error(`Failed to fetch tasks: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error fetching tasks:", error);
     // Return empty data on error

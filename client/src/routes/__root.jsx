@@ -1,3 +1,6 @@
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -5,12 +8,9 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import PaginatedBacklog from "./components/backlog/PaginatedBacklog";
-import { fetchProjects, deleteProject } from "./api/projectApi";
-import { useState } from "react";
-import AddTaskForm from "./components/tasks/AddTaskForm";
-import AddProjectForm from "./components/projects/AddProjectForm";
-import ConfirmDialog from "./components/ui/ConfirmDialog";
+import { fetchProjects, deleteProject } from "../api/projectApi";
+import AddProjectForm from "../components/projects/AddProjectForm";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
-function ProjectSidebar({ activeProjectId, onProjectSelect }) {
+function ProjectSidebar() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -44,15 +44,8 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
   const deleteProjectMutation = useMutation({
     mutationFn: deleteProject,
     onSuccess: async () => {
-      const deletedProjectId = confirmDialog.projectId;
-
       // Force immediate refetch to ensure fresh data
       await refetchProjects();
-
-      // Reset active project if it was deleted
-      if (deletedProjectId === activeProjectId) {
-        onProjectSelect(null);
-      }
 
       // Reset dialog
       setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
@@ -62,11 +55,6 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
       setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
     },
   });
-
-  // Handle project selection
-  const handleProjectClick = (projectId) => {
-    onProjectSelect(projectId);
-  };
 
   const handleAddProjectClick = () => {
     setIsProjectModalOpen(true);
@@ -89,7 +77,6 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
     if (confirmDialog.projectId) {
       deleteProjectMutation.mutate(confirmDialog.projectId);
     }
-    // Don't reset the dialog here - let the mutation handle it
   };
 
   const handleCancelDelete = () => {
@@ -107,6 +94,16 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
         <h1 className="sidebar__title">TaskFlow</h1>
       </div>
       <nav className="sidebar__nav">
+        <Link
+          to="/"
+          className="sidebar__home-link"
+          activeProps={{
+            className: "sidebar__home-link sidebar__home-link--active",
+          }}
+        >
+          Home
+        </Link>
+
         <h2 className="sidebar__subtitle">Projects</h2>
         <ul className="project-list">
           {Array.isArray(projectsData?.data) && projectsData.data.length > 0 ? (
@@ -114,25 +111,18 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
               // Skip any projects without ID
               if (!project || !project.id) return null;
 
-              // The data doesn't have an 'attributes' object - it's directly on the project
               const projectName =
                 project.ProjectName || `Project ${project.id}`;
 
               return (
-                <li
-                  key={project.id}
-                  className={`project-list__item ${
-                    activeProjectId === project.id
-                      ? "project-list__item--active"
-                      : ""
-                  }`}
-                >
-                  <a
-                    href="#"
+                <li key={project.id} className="project-list__item">
+                  <Link
+                    to="/projects/$projectId"
+                    params={{ projectId: project.id.toString() }}
                     className="project-list__link"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleProjectClick(project.id);
+                    activeProps={{
+                      className:
+                        "project-list__link project-list__link--active",
                     }}
                   >
                     <span className="project-list__icon">
@@ -142,7 +132,7 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
                       />
                     </span>
                     <span>{projectName}</span>
-                  </a>
+                  </Link>
                   <button
                     className="project-list__delete"
                     onClick={(e) => {
@@ -163,6 +153,19 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
             </li>
           )}
         </ul>
+
+        <div className="sidebar__info">
+          <h2 className="sidebar__subtitle">Info</h2>
+          <Link
+            to="/about"
+            className="sidebar__about-link"
+            activeProps={{
+              className: "sidebar__about-link sidebar__about-link--active",
+            }}
+          >
+            About
+          </Link>
+        </div>
 
         <div className="sidebar__actions">
           <button
@@ -192,101 +195,30 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
   );
 }
 
-function MainContent({ activeProjectId }) {
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-
-  // Fetch the projects data to find the active project
-  const { data: projectsData } = useQuery({
-    queryKey: ["projects"],
-    queryFn: fetchProjects,
-  });
-
-  // Find the active project from the projects list
-  const activeProject = projectsData?.data?.find(
-    (project) => project.id === activeProjectId
-  );
-
-  const projectName = activeProject?.ProjectName || "No Project Selected";
-
-  // Only show status if we have an active project
-  const isActive = activeProject?.isActive;
-  const statusText = activeProject
-    ? isActive
-      ? "Active Project"
-      : "Inactive Project"
-    : "";
-
-  const handleAddTaskClick = () => {
-    setIsTaskModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsTaskModalOpen(false);
-  };
-
-  return (
-    <main className="main">
-      <header className="header">
-        <div className="header__project">
-          <h1 className="header__title">{projectName}</h1>
-          <span className="header__subtitle">{statusText}</span>
-        </div>
-        <div className="header__actions">
-          <div className="header__view-toggle">
-            <button
-              className="view-toggle__button view-toggle__button--active"
-              data-view="backlog"
-            >
-              Backlog
-            </button>
-            <button className="view-toggle__button" data-view="kanban">
-              Kanban
-            </button>
-          </div>
-          <button
-            className="button button--primary"
-            onClick={handleAddTaskClick}
-          >
-            <span className="icon">
-              <img src="/styles/images/icons/plus.svg" alt="Add" />
-            </span>
-            Add Task
-          </button>
-        </div>
-      </header>
-
-      <PaginatedBacklog projectId={activeProjectId} />
-
-      {isTaskModalOpen && (
-        <AddTaskForm
-          onClose={handleCloseModal}
-          currentProjectId={activeProjectId}
-          projects={projectsData?.data || []}
-        />
-      )}
-
-      {/* Kanban View (hidden by default) */}
-      <section className="kanban" style={{ display: "none" }}>
-        {/* Kanban content would go here */}
-      </section>
-    </main>
-  );
-}
-
-function App() {
-  const [activeProjectId, setActiveProjectId] = useState(null);
-
+function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="app">
-        <ProjectSidebar
-          activeProjectId={activeProjectId}
-          onProjectSelect={setActiveProjectId}
-        />
-        <MainContent activeProjectId={activeProjectId} />
+        <ProjectSidebar />
+        <main className="main">
+          <Outlet />
+        </main>
       </div>
+      {import.meta.env.DEV && <TanStackRouterDevtools />}
     </QueryClientProvider>
   );
 }
 
-export default App;
+export const Route = createRootRoute({
+  component: RootComponent,
+  // Toevoegen van een error component om onverwachte fouten op te vangen
+  errorComponent: () => (
+    <div className="error-page">
+      <h1>Oops! Something went wrong</h1>
+      <p>An error occurred while loading the application.</p>
+      <Link to="/" className="button button--primary">
+        Go Home
+      </Link>
+    </div>
+  ),
+});

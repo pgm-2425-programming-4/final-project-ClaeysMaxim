@@ -14,7 +14,6 @@ export const fetchStatuses = async () => {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching statuses:", error);
     throw error;
   }
 };
@@ -33,7 +32,6 @@ export const fetchPriorities = async () => {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching priorities:", error);
     throw error;
   }
 };
@@ -52,7 +50,6 @@ export const fetchTeamMembers = async () => {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching team members:", error);
     throw error;
   }
 };
