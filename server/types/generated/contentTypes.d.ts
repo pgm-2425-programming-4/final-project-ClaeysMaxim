@@ -381,7 +381,7 @@ export interface ApiPriorityPriority extends Struct.CollectionTypeSchema {
     singularName: 'priority';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     color: Schema.Attribute.String;
@@ -411,7 +411,7 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
     singularName: 'project';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -442,7 +442,7 @@ export interface ApiStatusStatus extends Struct.CollectionTypeSchema {
     singularName: 'status';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     color: Schema.Attribute.String;
@@ -473,7 +473,7 @@ export interface ApiTaskTask extends Struct.CollectionTypeSchema {
     singularName: 'task';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     assignee: Schema.Attribute.Relation<
@@ -508,7 +508,7 @@ export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
     singularName: 'team-member';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     avatar: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;

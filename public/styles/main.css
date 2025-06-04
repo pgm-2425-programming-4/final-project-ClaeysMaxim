@@ -13,6 +13,8 @@
 @import "components/badges.css";
 @import "components/pagination.css";
 @import "components/add-task-form.css";
+@import "components/delete-button.css";
+@import "components/confirm-dialog.css";
 
 @import "components/responsive.css";
 

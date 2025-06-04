@@ -7,7 +7,7 @@
     "displayName": "Priority"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "priorityLevel": {

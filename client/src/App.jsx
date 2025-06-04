@@ -2,12 +2,15 @@ import {
   QueryClient,
   QueryClientProvider,
   useQuery,
+  useMutation,
+  useQueryClient,
 } from "@tanstack/react-query";
 import PaginatedBacklog from "./components/backlog/PaginatedBacklog";
-import { fetchProjects } from "./api/projectApi";
+import { fetchProjects, deleteProject } from "./api/projectApi";
 import { useState } from "react";
 import AddTaskForm from "./components/tasks/AddTaskForm";
 import AddProjectForm from "./components/projects/AddProjectForm";
+import ConfirmDialog from "./components/ui/ConfirmDialog";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -21,17 +24,42 @@ const queryClient = new QueryClient({
 
 function ProjectSidebar({ activeProjectId, onProjectSelect }) {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    projectId: null,
+    projectName: "",
+  });
+  const queryClient = useQueryClient();
+
   const {
     data: projectsData,
     isLoading,
     error,
+    refetch: refetchProjects,
   } = useQuery({
     queryKey: ["projects"],
     queryFn: fetchProjects,
-    onSuccess: (data) => {
-      if (!activeProjectId && data?.data?.length > 0) {
-        onProjectSelect(data.data[0].id);
+  });
+
+  const deleteProjectMutation = useMutation({
+    mutationFn: deleteProject,
+    onSuccess: async () => {
+      const deletedProjectId = confirmDialog.projectId;
+
+      // Force immediate refetch to ensure fresh data
+      await refetchProjects();
+
+      // Reset active project if it was deleted
+      if (deletedProjectId === activeProjectId) {
+        onProjectSelect(null);
       }
+
+      // Reset dialog
+      setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
+    },
+    onError: (error) => {
+      console.error("Delete failed:", error);
+      setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
     },
   });
 
@@ -46,6 +74,26 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
 
   const handleCloseProjectModal = () => {
     setIsProjectModalOpen(false);
+    refetchProjects();
+  };
+
+  const handleDeleteProject = (projectId, projectName) => {
+    setConfirmDialog({
+      isOpen: true,
+      projectId,
+      projectName,
+    });
+  };
+
+  const handleConfirmDelete = () => {
+    if (confirmDialog.projectId) {
+      deleteProjectMutation.mutate(confirmDialog.projectId);
+    }
+    // Don't reset the dialog here - let the mutation handle it
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
   };
 
   if (isLoading)
@@ -87,7 +135,7 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
                       handleProjectClick(project.id);
                     }}
                   >
-                    <span className="icon project-list__icon">
+                    <span className="project-list__icon">
                       <img
                         src="/styles/images/icons/laptop-code.svg"
                         alt="Project"
@@ -95,6 +143,17 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
                     </span>
                     <span>{projectName}</span>
                   </a>
+                  <button
+                    className="project-list__delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteProject(project.id, projectName);
+                    }}
+                    disabled={deleteProjectMutation.isPending}
+                    title="Delete project"
+                  >
+                    ×
+                  </button>
                 </li>
               );
             })
@@ -121,6 +180,14 @@ function ProjectSidebar({ activeProjectId, onProjectSelect }) {
       {isProjectModalOpen && (
         <AddProjectForm onClose={handleCloseProjectModal} />
       )}
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Delete Project"
+        message={`Are you sure you want to delete "${confirmDialog.projectName}"? This action cannot be undone.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </aside>
   );
 }
