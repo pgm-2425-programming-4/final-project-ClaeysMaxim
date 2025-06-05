@@ -3,7 +3,6 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createTask } from "../../api/taskApi";
 import { fetchStatuses, fetchPriorities } from "../../api/referenceDataApi";
 
-// Hernoem de component
 function TaskForm({ onClose, currentProjectId, projects }) {
   const queryClient = useQueryClient();
 
@@ -21,31 +20,53 @@ function TaskForm({ onClose, currentProjectId, projects }) {
   const [error, setError] = useState("");
 
   // Query for statuses and priorities
-  const { data: statusesData } = useQuery({
+  const { data: statusesData, isLoading: statusesLoading } = useQuery({
     queryKey: ["statuses"],
     queryFn: fetchStatuses,
   });
-  const { data: prioritiesData } = useQuery({
+  
+  const { data: prioritiesData, isLoading: prioritiesLoading } = useQuery({
     queryKey: ["priorities"],
     queryFn: fetchPriorities,
   });
 
   // Set default status and priority once data is loaded
   useEffect(() => {
-    if (statusesData?.data?.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        taskStatus: statusesData.data[0].id.toString(),
-      }));
+    // Only update if we have valid data and the current values are empty
+    if (statusesData?.data?.length > 0 && !formData.taskStatus) {
+      // Sort statuses by order field (lowest first)
+      const sortedStatuses = [...statusesData.data].sort((a, b) => {
+        return (a.order || 0) - (b.order || 0);
+      });
+      
+      // Use the first status (which should be the lowest order after sorting)
+      const defaultStatus = sortedStatuses[0];
+      
+      if (defaultStatus) {
+        setFormData(prev => ({
+          ...prev,
+          taskStatus: defaultStatus.id
+        }));
+      }
     }
 
-    if (prioritiesData?.data?.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        priority: prioritiesData.data[0].id.toString(),
-      }));
+    if (prioritiesData?.data?.length > 0 && !formData.priority) {
+      // Find the "Medium" priority if it exists
+      const mediumPriority = prioritiesData.data.find(
+        priority => priority.priorityLevel?.toLowerCase() === "medium"
+      );
+      
+      // Set the first priority as default if "Medium" doesn't exist
+      const defaultPriority = mediumPriority || prioritiesData.data[0];
+      
+      if (defaultPriority) {
+        setFormData(prev => ({
+          ...prev,
+          priority: defaultPriority.id
+        }));
+      }
     }
-  }, [statusesData, prioritiesData]);
+  }, [statusesData, prioritiesData, formData.taskStatus, formData.priority]);
 
   const createTaskMutation = useMutation({
     mutationFn: createTask,
@@ -73,22 +94,25 @@ function TaskForm({ onClose, currentProjectId, projects }) {
       return;
     }
 
+    if (!formData.project) {
+      setError("Project is required");
+      return;
+    }
+
     // Format the date and time for Strapi
     let fullDueDate = null;
     if (formData.dueDate) {
       fullDueDate = `${formData.dueDate}T${formData.dueTime}:00.000Z`;
     }
 
-    // Prepare data for submission
+    // Prepare data for submission - ensure all relation IDs are numbers
     const submitData = {
       data: {
         Title: formData.Title,
         Description: formData.Description,
         dueDate: fullDueDate,
         project: parseInt(formData.project),
-        taskStatus: formData.taskStatus
-          ? parseInt(formData.taskStatus)
-          : undefined,
+        taskStatus: formData.taskStatus ? parseInt(formData.taskStatus) : undefined,
         priority: formData.priority ? parseInt(formData.priority) : undefined,
       },
     };
@@ -97,28 +121,22 @@ function TaskForm({ onClose, currentProjectId, projects }) {
   };
 
   return (
-    <div
-      className="add-task-overlay"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
+    <div className="add-task-overlay" onClick={(e) => {
+      if (e.target === e.currentTarget) onClose();
+    }}>
       <div className="add-task">
         <div className="add-task__header">
           <h2 className="add-task__title">Add New Task</h2>
-          <button className="add-task__close" onClick={onClose}>
-            ×
-          </button>
+          <button className="add-task__close" onClick={onClose}>×</button>
         </div>
 
         <div className="add-task__body">
           {error && <div className="add-task-form__error">{error}</div>}
 
           <form onSubmit={handleSubmit}>
+            {/* Title and Description fields */}
             <div className="add-task-form__group">
-              <label className="add-task-form__label" htmlFor="Title">
-                Title *
-              </label>
+              <label className="add-task-form__label" htmlFor="Title">Title *</label>
               <input
                 className="add-task-form__control"
                 type="text"
@@ -131,9 +149,7 @@ function TaskForm({ onClose, currentProjectId, projects }) {
             </div>
 
             <div className="add-task-form__group">
-              <label className="add-task-form__label" htmlFor="Description">
-                Description
-              </label>
+              <label className="add-task-form__label" htmlFor="Description">Description</label>
               <textarea
                 className="add-task-form__control add-task-form__control--textarea"
                 id="Description"
@@ -143,11 +159,10 @@ function TaskForm({ onClose, currentProjectId, projects }) {
               ></textarea>
             </div>
 
+            {/* Date and time fields */}
             <div className="add-task-form__row">
               <div className="add-task-form__group add-task-form__group--half">
-                <label className="add-task-form__label" htmlFor="dueDate">
-                  Due Date
-                </label>
+                <label className="add-task-form__label" htmlFor="dueDate">Due Date</label>
                 <input
                   className="add-task-form__control"
                   type="date"
@@ -159,9 +174,7 @@ function TaskForm({ onClose, currentProjectId, projects }) {
               </div>
 
               <div className="add-task-form__group add-task-form__group--half">
-                <label className="add-task-form__label" htmlFor="dueTime">
-                  Time
-                </label>
+                <label className="add-task-form__label" htmlFor="dueTime">Time</label>
                 <input
                   className="add-task-form__control"
                   type="time"
@@ -173,11 +186,10 @@ function TaskForm({ onClose, currentProjectId, projects }) {
               </div>
             </div>
 
+            {/* Status and priority fields */}
             <div className="add-task-form__row">
               <div className="add-task-form__group add-task-form__group--half">
-                <label className="add-task-form__label" htmlFor="taskStatus">
-                  Status
-                </label>
+                <label className="add-task-form__label" htmlFor="taskStatus">Status</label>
                 <select
                   className="add-task-form__control"
                   id="taskStatus"
@@ -185,22 +197,24 @@ function TaskForm({ onClose, currentProjectId, projects }) {
                   value={formData.taskStatus}
                   onChange={handleChange}
                 >
-                  {!statusesData?.data ? (
-                    <option>Loading...</option>
+                  {statusesLoading ? (
+                    <option value="">Loading statuses...</option>
+                  ) : !statusesData?.data?.length ? (
+                    <option value="">No statuses available</option>
                   ) : (
-                    statusesData.data.map((status) => (
-                      <option key={status.id} value={status.id}>
-                        {status.attributes.name}
-                      </option>
-                    ))
+                    [...statusesData.data]
+                      .sort((a, b) => (a.order || 0) - (b.order || 0))
+                      .map((status) => (
+                        <option key={status.id} value={status.id}>
+                          {status.name || `Status ${status.id}`}
+                        </option>
+                      ))
                   )}
                 </select>
               </div>
 
               <div className="add-task-form__group add-task-form__group--half">
-                <label className="add-task-form__label" htmlFor="priority">
-                  Priority
-                </label>
+                <label className="add-task-form__label" htmlFor="priority">Priority</label>
                 <select
                   className="add-task-form__control"
                   id="priority"
@@ -208,12 +222,14 @@ function TaskForm({ onClose, currentProjectId, projects }) {
                   value={formData.priority}
                   onChange={handleChange}
                 >
-                  {!prioritiesData?.data ? (
-                    <option>Loading...</option>
+                  {prioritiesLoading ? (
+                    <option value="">Loading priorities...</option>
+                  ) : !prioritiesData?.data?.length ? (
+                    <option value="">No priorities available</option>
                   ) : (
                     prioritiesData.data.map((priority) => (
                       <option key={priority.id} value={priority.id}>
-                        {priority.attributes.priorityLevel}
+                        {priority.priorityLevel || `Priority ${priority.id}`}
                       </option>
                     ))
                   )}
@@ -221,10 +237,9 @@ function TaskForm({ onClose, currentProjectId, projects }) {
               </div>
             </div>
 
+            {/* Project selection */}
             <div className="add-task-form__group">
-              <label className="add-task-form__label" htmlFor="project">
-                Project *
-              </label>
+              <label className="add-task-form__label" htmlFor="project">Project *</label>
               <select
                 className="add-task-form__control"
                 id="project"
@@ -242,6 +257,7 @@ function TaskForm({ onClose, currentProjectId, projects }) {
               </select>
             </div>
 
+            {/* Form buttons */}
             <div className="add-task__footer">
               <button
                 type="button"
@@ -265,5 +281,4 @@ function TaskForm({ onClose, currentProjectId, projects }) {
   );
 }
 
-// Hernoem de export
 export default TaskForm;
