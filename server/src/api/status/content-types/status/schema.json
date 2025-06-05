@@ -4,7 +4,8 @@
   "info": {
     "singularName": "status",
     "pluralName": "statuses",
-    "displayName": "Status"
+    "displayName": "Status",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -15,9 +16,6 @@
     },
     "order": {
       "type": "integer"
-    },
-    "color": {
-      "type": "string"
     }
   }
 }
