@@ -20,7 +20,7 @@ function ProjectDetailComponent() {
 
   // Find the active project from the projects list
   const activeProject = projectsData?.data?.find(
-    (project) => project.id === numericProjectId
+    (project) => project.id === numericProjectId,
   );
 
   const projectName = activeProject?.ProjectName || "Project Not Found";

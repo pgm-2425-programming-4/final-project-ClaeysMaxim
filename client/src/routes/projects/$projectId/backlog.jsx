@@ -17,7 +17,7 @@ function ProjectBacklogComponent() {
 
   // Find the active project from the projects list
   const activeProject = projectsData?.data?.find(
-    (project) => project.id === parseInt(projectId)
+    (project) => project.id === parseInt(projectId),
   );
 
   const projectName = activeProject?.ProjectName || "No Project Selected";
