@@ -1,40 +1,108 @@
-const Backlog = ({ tasks }) => {
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import TaskForm from "../tasks/TaskForm";
+
+const Backlog = ({ tasks, project }) => {
+  const queryClient = useQueryClient();
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setIsFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setTimeout(() => {
+      setSelectedTask(null);
+      queryClient.invalidateQueries(["tasks"]);
+    }, 300);
+  };
+
   if (!tasks || tasks.length === 0) {
-    return <p>No tasks found in backlog</p>;
+    return <p>No tasks found in the backlog.</p>;
   }
 
   return (
-    <table className="task-table">
-      <thead className="task-table__header">
-        <tr>
-          <th>ID</th>
-          <th>Task</th>
-          <th>Description</th>
-          <th>Due Date</th>
-        </tr>
-      </thead>
-      <tbody className="task-table__body">
-        {tasks.map((task) => {
-          const title = task.Title || task.attributes?.Title || "No title";
-          const description =
-            task.Description ||
-            task.attributes?.Description ||
-            "No description";
-          const dueDate = task.dueDate || task.attributes?.dueDate;
+    <div className="backlog-container">
+      {isFormOpen && selectedTask && (
+        <div className="add-task-overlay">
+          <TaskForm
+            task={selectedTask}
+            projectId={projectId}
+            onClose={handleCloseForm}
+          />
+        </div>
+      )}
+      
+      <table className="task-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks.map((task) => {
+            const id = task.id;
+            const attributes = task.attributes || task;
+            const title = attributes.Title || "No title";
+            const description = attributes.Description || "No description";
+            const dueDate = attributes.dueDate;
 
-          return (
-            <tr className="task-table__row" key={task.id}>
-              <td>{task.id}</td>
-              <td>{title}</td>
-              <td>{description}</td>
-              <td>
-                {dueDate ? new Date(dueDate).toLocaleDateString() : "No date"}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+            // Get status and priority names
+            let statusName = "Not set";
+            let priorityName = "Not set";
+
+            const statusData = attributes.taskStatus?.data || attributes.taskStatus;
+            if (statusData) {
+              statusName = statusData.attributes?.name || statusData.name || "Unnamed status";
+            }
+
+            const priorityData = attributes.priority?.data || attributes.priority;
+            if (priorityData) {
+              priorityName = 
+                priorityData.attributes?.priorityLevel || 
+                priorityData.priorityLevel || 
+                "Unnamed priority";
+            }
+
+            return (
+              <tr key={id} className="task-row">
+                <td>{id}</td>
+                <td>{title}</td>
+                <td>
+                  {description && description.length > 50
+                    ? `${description.substring(0, 50)}...`
+                    : description || "No description"}
+                </td>
+                <td>
+                  {dueDate
+                    ? new Date(dueDate).toLocaleDateString()
+                    : "No deadline"}
+                </td>
+                <td>{statusName}</td>
+                <td>{priorityName}</td>
+                <td>
+                  <button
+                    onClick={() => handleTaskClick(task)}
+                    className="button button--small button--primary"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
