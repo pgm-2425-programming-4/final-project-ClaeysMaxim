@@ -29,12 +29,12 @@
     },
     "taskStatus": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::status.status"
     },
     "priority": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::priority.priority"
     },
     "assignee": {
