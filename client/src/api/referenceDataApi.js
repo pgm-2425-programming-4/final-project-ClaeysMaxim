@@ -1,8 +1,9 @@
 import { API_URL, API_TOKEN } from "../constants/constants";
 
+// Function to fetch all statuses
 export const fetchStatuses = async () => {
   try {
-    const response = await fetch(`${API_URL}/statuses?sort=order`, {
+    const response = await fetch(`${API_URL}/statuses?sort=order:asc`, {
       headers: {
         Authorization: `Bearer ${API_TOKEN}`,
       },
@@ -12,12 +13,14 @@ export const fetchStatuses = async () => {
       throw new Error(`Failed to fetch statuses: ${response.status}`);
     }
 
-    return await response.json();
+    return response.json();
   } catch (error) {
+    console.error("Error fetching statuses:", error);
     throw error;
   }
 };
 
+// Function to fetch all priorities
 export const fetchPriorities = async () => {
   try {
     const response = await fetch(`${API_URL}/priorities`, {
@@ -30,12 +33,14 @@ export const fetchPriorities = async () => {
       throw new Error(`Failed to fetch priorities: ${response.status}`);
     }
 
-    return await response.json();
+    return response.json();
   } catch (error) {
+    console.error("Error fetching priorities:", error);
     throw error;
   }
 };
 
+// Function to fetch all team members
 export const fetchTeamMembers = async () => {
   try {
     const response = await fetch(`${API_URL}/team-members`, {
@@ -48,8 +53,15 @@ export const fetchTeamMembers = async () => {
       throw new Error(`Failed to fetch team members: ${response.status}`);
     }
 
-    return await response.json();
+    return response.json();
   } catch (error) {
+    console.error("Error fetching team members:", error);
     throw error;
   }
+};
+
+export default {
+  fetchStatuses,
+  fetchPriorities,
+  fetchTeamMembers,
 };

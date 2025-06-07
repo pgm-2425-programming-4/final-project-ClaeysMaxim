@@ -48,16 +48,20 @@ export const deleteProject = async (projectId) => {
     const response = await fetch(`${API_URL}/projects/${projectId}`, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${API_TOKEN}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to delete project: ${response.status}`);
+      let errorText = "Unknown error";
+      try {
+        errorText = await response.text();
+      } catch (e) {}
+
+      throw new Error(`Failed to delete project: ${response.status} - ${errorText}`);
     }
 
-    return { success: true };
+    return await response.json();
   } catch (error) {
     console.error("Error deleting project:", error);
     throw error;
