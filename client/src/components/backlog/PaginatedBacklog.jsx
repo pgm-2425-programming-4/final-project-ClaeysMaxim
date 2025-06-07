@@ -4,7 +4,7 @@ import { fetchTasks } from "../../api/taskApi";
 import Backlog from "./Backlog";
 import Pagination from "./Pagination";
 
-const PaginatedBacklog = ({ projectId }) => {
+const PaginatedBacklog = ({ projectId, project }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -46,7 +46,11 @@ const PaginatedBacklog = ({ projectId }) => {
       ) : data?.data?.length === 0 ? (
         <div>No tasks found for this project.</div>
       ) : (
-        <Backlog tasks={data?.data || []} />
+        <Backlog
+          tasks={data?.data || []}
+          project={project}
+          projectId={projectId}
+        />
       )}
 
       {data?.data?.length > 0 && (

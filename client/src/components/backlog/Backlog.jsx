@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import TaskForm from "../tasks/TaskForm";
 
-const Backlog = ({ tasks, project }) => {
+const Backlog = ({ tasks, project, projectId }) => {
   const queryClient = useQueryClient();
   const [selectedTask, setSelectedTask] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -24,13 +24,16 @@ const Backlog = ({ tasks, project }) => {
     return <p>No tasks found in the backlog.</p>;
   }
 
+  // Get projectId from prop or extract from project object
+  const resolvedProjectId = projectId || project?.id || project?.attributes?.id;
+
   return (
     <div className="backlog-container">
       {isFormOpen && selectedTask && (
         <div className="add-task-overlay">
           <TaskForm
             task={selectedTask}
-            projectId={projectId}
+            projectId={resolvedProjectId}
             onClose={handleCloseForm}
           />
         </div>
