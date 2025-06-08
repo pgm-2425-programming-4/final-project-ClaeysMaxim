@@ -1,4 +1,4 @@
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useState } from "react";
 import {
@@ -23,6 +23,7 @@ const queryClient = new QueryClient({
 });
 
 function ProjectSidebar() {
+  const navigate = useNavigate();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -81,6 +82,10 @@ function ProjectSidebar() {
 
   const handleCancelDelete = () => {
     setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
+  };
+
+  const handleManageAssigneesClick = () => {
+    navigate({ to: '/assignees' });
   };
 
   if (isLoading)
@@ -177,6 +182,17 @@ function ProjectSidebar() {
             </span>
             New Project
           </button>
+          
+          <button
+            className="button button--secondary sidebar__manage-assignees"
+            onClick={handleManageAssigneesClick}
+            style={{ marginTop: "10px" }}
+          >
+            <span className="icon">
+              <img src="/styles/images/icons/team.svg" alt="Team" />
+            </span>
+            Manage Assignees
+          </button>
         </div>
       </nav>
 
@@ -211,7 +227,6 @@ function RootComponent() {
 
 export const Route = createRootRoute({
   component: RootComponent,
-  // Toevoegen van een error component om onverwachte fouten op te vangen
   errorComponent: () => (
     <div className="error-page">
       <h1>Oops! Something went wrong</h1>
