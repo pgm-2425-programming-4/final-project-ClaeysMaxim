@@ -39,9 +39,9 @@
     },
     "assignee": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::team-member.team-member",
-      "inversedBy": "task"
+      "inversedBy": "tasks"
     }
   }
 }
