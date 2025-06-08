@@ -1,6 +1,5 @@
 import { API_URL, API_TOKEN } from "../constants/constants";
 
-// Function to fetch all tasks with pagination and optional project filter
 export const fetchTasks = async (page = 1, pageSize = 10, projectId = null) => {
   try {
     let url = `${API_URL}/tasks?populate=*&pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
@@ -49,22 +48,12 @@ export const createTask = async (taskData) => {
   }
 };
 
-// Update function for Strapi v5 - uses documentId
 export const updateTask = async (taskData, updatedData) => {
   try {
-    let identifier;
-    
-    // If taskData is just a number, treat it as ID
-    if (typeof taskData === 'number') {
-      identifier = taskData;
-    }
-    // If taskData is an object, use documentId for Strapi v5
-    else if (typeof taskData === 'object' && taskData !== null) {
-      identifier = taskData.documentId;
-    }
+    const identifier = taskData.documentId;
     
     if (!identifier) {
-      throw new Error('Invalid task data provided. Expected task ID or task object with documentId');
+      throw new Error('Invalid task data provided. Expected task object with documentId');
     }
 
     const response = await fetch(`${API_URL}/tasks/${identifier}`, {
@@ -105,10 +94,15 @@ export const updateTaskStatus = async (taskId, statusId) => {
   return updateTask(taskId, { taskStatus: statusId });
 };
 
-// Function to delete a task
-export const deleteTask = async (taskId) => {
+export const deleteTask = async (taskData) => {
   try {
-    const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+    const identifier = taskData.documentId;
+    
+    if (!identifier) {
+      throw new Error('Invalid task data provided. Expected task object with documentId');
+    }
+
+    const response = await fetch(`${API_URL}/tasks/${identifier}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${API_TOKEN}`,
@@ -116,12 +110,22 @@ export const deleteTask = async (taskId) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to delete task: ${response.status}`);
+      let errorText = '';
+      try {
+        const errorData = await response.json();
+        errorText = JSON.stringify(errorData);
+        console.error('Error response:', errorData);
+      } catch (e) {
+        errorText = await response.text();
+      }
+      
+      throw new Error(`Failed to delete task: ${response.status} - ${errorText}`);
     }
 
-    return await response.json();
+    return { success: true };
+    
   } catch (error) {
-    console.error("Error deleting task:", error);
+    console.error(`Error deleting task:`, error);
     throw error;
   }
 };
