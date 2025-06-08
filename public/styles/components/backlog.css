@@ -68,8 +68,12 @@
   margin: 20px 0;
 }
 
-/* Only add this if it doesn't already exist in your CSS */
 .button--small {
   padding: 5px 10px;
   font-size: 12px;
+}
+
+
+.task-table .button--primary {
+  margin-right: 8px;
 }
