@@ -477,7 +477,7 @@ export interface ApiTaskTask extends Struct.CollectionTypeSchema {
   };
   attributes: {
     assignee: Schema.Attribute.Relation<
-      'oneToOne',
+      'manyToOne',
       'api::team-member.team-member'
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -523,7 +523,7 @@ export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    task: Schema.Attribute.Relation<'oneToOne', 'api::task.task'>;
+    tasks: Schema.Attribute.Relation<'oneToMany', 'api::task.task'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
