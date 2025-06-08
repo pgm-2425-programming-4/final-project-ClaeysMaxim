@@ -39,6 +39,16 @@
   padding-top: 20px;
 }
 
+.sidebar__manage-assignees {
+  text-decoration: none !important;
+  width: 100%;
+}
+
+.sidebar__manage-assignees:hover {
+  text-decoration: none !important;
+}
+
+
 /* Navigation links */
 .sidebar__home-link,
 .sidebar__about-link {

@@ -20,9 +20,9 @@
       "required": false,
       "allowedTypes": ["images", "files", "videos", "audios"]
     },
-    "task": {
+    "tasks": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::task.task",
       "mappedBy": "assignee"
     }
