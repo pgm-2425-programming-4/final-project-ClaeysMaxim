@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import TaskForm from "../tasks/TaskForm";
+import ConfirmDialog from "../ui/ConfirmDialog";
+import { deleteTask } from "../../api/taskApi";
 
 const Backlog = ({ tasks, project, projectId }) => {
   const queryClient = useQueryClient();
   const [selectedTask, setSelectedTask] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
@@ -18,6 +22,30 @@ const Backlog = ({ tasks, project, projectId }) => {
       setSelectedTask(null);
       queryClient.invalidateQueries(["tasks"]);
     }, 300);
+  };
+
+  const handleDeleteClick = (task) => {
+    setTaskToDelete(task);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (taskToDelete) {
+      try {
+        await deleteTask(taskToDelete);
+        queryClient.invalidateQueries(["tasks"]);
+        setIsDeleteDialogOpen(false);
+        setTaskToDelete(null);
+      } catch (error) {
+        console.error("Error deleting task:", error);
+        alert(`Error deleting task: ${error.message}`);
+      }
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteDialogOpen(false);
+    setTaskToDelete(null);
   };
 
   if (!tasks || tasks.length === 0) {
@@ -38,6 +66,14 @@ const Backlog = ({ tasks, project, projectId }) => {
           />
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        title="Delete Task"
+        message={`Are you sure you want to delete "${taskToDelete?.attributes?.Title || taskToDelete?.Title}"? This action cannot be undone.`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
       
       <table className="task-table">
         <thead>
@@ -98,6 +134,12 @@ const Backlog = ({ tasks, project, projectId }) => {
                     className="button button--small button--primary"
                   >
                     Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(task)}
+                    className="button button--small button--danger"
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>
