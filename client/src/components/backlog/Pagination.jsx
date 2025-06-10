@@ -1,9 +1,21 @@
 import React from "react";
 
-const Pagination = ({ currentPage, totalPages, onPageChanged }) => {
+const Pagination = ({ 
+  currentPage, 
+  totalPages, 
+  pageSize, 
+  pageSizeOptions, 
+  onPageChanged, 
+  onPageSizeChanged 
+}) => {
   const handlePageClick = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     onPageChanged(pageNumber);
+  };
+
+  const handlePageSizeChange = (e) => {
+    const newPageSize = parseInt(e.target.value, 10);
+    onPageSizeChanged(newPageSize);
   };
 
   const renderPaginationItems = () => {
@@ -17,7 +29,7 @@ const Pagination = ({ currentPage, totalPages, onPageChanged }) => {
       return items;
     }
 
-    // More than 6 pages
+    // More than 6 pages - smart pagination
     // Current page is 1, 2, or 3
     if (currentPage <= 3) {
       for (let i = 1; i <= 4; i++) {
@@ -69,6 +81,21 @@ const Pagination = ({ currentPage, totalPages, onPageChanged }) => {
 
   return (
     <div className="pagination">
+      <div className="pagination__page-size">
+        <select 
+          id="pageSize" 
+          className="pagination__page-size-select"
+          value={pageSize}
+          onChange={handlePageSizeChange}
+        >
+          {pageSizeOptions.map(option => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <button
         className="pagination__button pagination__button--prev"
         onClick={() => handlePageClick(currentPage - 1)}
