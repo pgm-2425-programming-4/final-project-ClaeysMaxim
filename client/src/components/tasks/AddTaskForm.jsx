@@ -51,13 +51,13 @@ function TaskForm({ onClose, currentProjectId, projects }) {
     }
 
     if (prioritiesData?.data?.length > 0 && !formData.priority) {
-      // Find the "Medium" priority if it exists
-      const mediumPriority = prioritiesData.data.find(
-        priority => priority.priorityLevel?.toLowerCase() === "medium"
+      // Find the "Low" priority if it exists
+      const lowPriority = prioritiesData.data.find(
+        priority => priority.priorityLevel?.toLowerCase() === "low"
       );
       
-      // Set the first priority as default if "Medium" doesn't exist
-      const defaultPriority = mediumPriority || prioritiesData.data[0];
+      // Set the first priority as default if "Low" doesn't exist
+      const defaultPriority = lowPriority || prioritiesData.data[0];
       
       if (defaultPriority) {
         setFormData(prev => ({

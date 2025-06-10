@@ -1,46 +1,50 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTasks } from "../../api/taskApi";
-import { fetchStatuses } from "../../api/referenceDataApi";
+import { PAGE_SIZE_OPTIONS } from "../../constants/constants";
 import Backlog from "./Backlog";
 import Pagination from "./Pagination";
 
 const PaginatedBacklog = ({ projectId, project }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(10);
 
-  // Reset to page 1 when project changes
+  // Reset to page 1 when project or page size changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [projectId]);
+  }, [projectId, pageSize]);
 
   // Make sure projectId is a number for the API
   const numericProjectId =
     typeof projectId === "string" ? parseInt(projectId, 10) : projectId;
 
+  // Fetch ALL tasks for the project (we'll filter client-side)
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tasks", currentPage, numericProjectId],
-    queryFn: () => fetchTasks(currentPage, pageSize, numericProjectId),
+    queryKey: ["tasks", numericProjectId],
+    queryFn: () => fetchTasks(1, 1000, numericProjectId), // Get all tasks
     enabled: !!numericProjectId,
   });
 
-  // Fetch statuses to filter backlog tasks
-  const { data: statusesData } = useQuery({
-    queryKey: ["statuses"],
-    queryFn: fetchStatuses,
-  });
+  // Filter tasks to only show backlog status
+  const backlogTasks = data?.data?.filter((task) => {
+    const statusName = task.taskStatus?.name;
+    return statusName?.toLowerCase() === "backlog";
+  }) || [];
+
+  // Client-side pagination
+  const totalItems = backlogTasks.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedTasks = backlogTasks.slice(startIndex, endIndex);
 
   const handlePageChanged = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  // Filter tasks to only show backlog status
-  const filteredTasks = data?.data?.filter(task => {
-    const statusName = task.taskStatus?.name;
-    return statusName?.toLowerCase() === 'backlog';
-  }) || [];
-
-  const totalPages = data?.meta?.pagination?.pageCount || 1;
+  const handlePageSizeChanged = (newPageSize) => {
+    setPageSize(newPageSize);
+  };
 
   if (!projectId) {
     return <div>Select a project to view tasks</div>;
@@ -57,21 +61,20 @@ const PaginatedBacklog = ({ projectId, project }) => {
         <div>Loading tasks...</div>
       ) : error ? (
         <div>Error loading tasks: {error.message}</div>
-      ) : filteredTasks.length === 0 ? (
+      ) : backlogTasks.length === 0 ? (
         <div className="empty-message">No tasks in backlog for this project.</div>
       ) : (
-        <Backlog
-          tasks={filteredTasks}
-          project={project}
-          projectId={projectId}
-        />
+        <Backlog tasks={paginatedTasks} project={project} projectId={projectId} />
       )}
 
-      {filteredTasks.length > 0 && (
+      {backlogTasks.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
+          pageSize={pageSize}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
           onPageChanged={handlePageChanged}
+          onPageSizeChanged={handlePageSizeChanged}
         />
       )}
     </section>

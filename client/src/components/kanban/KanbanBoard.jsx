@@ -124,7 +124,7 @@ const KanbanBoard = ({ projectId }) => {
                 const taskDescription = task.Description;
                 
                 // Get priority data
-                const priorityLevel = task.priority?.priorityLevel || "Medium";
+                const priorityLevel = task.priority?.priorityLevel || "Low";
                 const priorityColor = task.priority?.color || "#888";
                 
                 // Get assignee data
