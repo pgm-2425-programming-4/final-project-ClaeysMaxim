@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTasks } from "../../api/taskApi";
+import { fetchStatuses } from "../../api/referenceDataApi";
 import Backlog from "./Backlog";
 import Pagination from "./Pagination";
 
@@ -20,12 +21,24 @@ const PaginatedBacklog = ({ projectId, project }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["tasks", currentPage, numericProjectId],
     queryFn: () => fetchTasks(currentPage, pageSize, numericProjectId),
-    enabled: !!numericProjectId, // Only run the query if we have a projectId
+    enabled: !!numericProjectId,
+  });
+
+  // Fetch statuses to filter backlog tasks
+  const { data: statusesData } = useQuery({
+    queryKey: ["statuses"],
+    queryFn: fetchStatuses,
   });
 
   const handlePageChanged = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  // Filter tasks to only show backlog status
+  const filteredTasks = data?.data?.filter(task => {
+    const statusName = task.taskStatus?.name;
+    return statusName?.toLowerCase() === 'backlog';
+  }) || [];
 
   const totalPages = data?.meta?.pagination?.pageCount || 1;
 
@@ -37,23 +50,24 @@ const PaginatedBacklog = ({ projectId, project }) => {
     <section className="backlog">
       <div className="backlog__header">
         <h2 className="backlog__title">Task Backlog</h2>
+        <p className="backlog__subtitle">Tasks awaiting assignment to sprint</p>
       </div>
 
       {isLoading ? (
         <div>Loading tasks...</div>
       ) : error ? (
         <div>Error loading tasks: {error.message}</div>
-      ) : data?.data?.length === 0 ? (
-        <div>No tasks found for this project.</div>
+      ) : filteredTasks.length === 0 ? (
+        <div className="empty-message">No tasks in backlog for this project.</div>
       ) : (
         <Backlog
-          tasks={data?.data || []}
+          tasks={filteredTasks}
           project={project}
           projectId={projectId}
         />
       )}
 
-      {data?.data?.length > 0 && (
+      {filteredTasks.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
