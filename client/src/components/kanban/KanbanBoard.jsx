@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchTasks, updateTaskStatus } from "../../api/taskApi";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchTasks } from "../../api/taskApi";
 import { fetchStatuses } from "../../api/referenceDataApi";
-import { API_URL, API_TOKEN } from "../../constants/constants";
+import { API_URL } from "../../constants/constants";
+import TaskForm from "../tasks/TaskForm";
 
 const KanbanBoard = ({ projectId }) => {
   const queryClient = useQueryClient();
   const [columns, setColumns] = useState({});
-  const [draggingTask, setDraggingTask] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   // Convert project ID to number if it's a string
   const numericProjectId = typeof projectId === 'string' ? parseInt(projectId, 10) : projectId;
@@ -33,116 +35,55 @@ const KanbanBoard = ({ projectId }) => {
     queryFn: fetchStatuses,
   });
 
-  // Mutation for updating task status
-  const updateTaskMutation = useMutation({
-    mutationFn: async ({ taskId, statusId }) => {
-      console.log(`Mutation: Update task ${taskId} to status ${statusId}`);
-      
-      // Direct API call to update task status - this should be more reliable
-      const response = await fetch(`${API_URL}/tasks/${taskId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_TOKEN}`,
-        },
-        body: JSON.stringify({
-          data: {
-            taskStatus: statusId
-          }
-        }),
-      });
-      
-      console.log("Response status:", response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("API error:", errorText);
-        throw new Error(`Update failed: ${response.status} ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      return { success: true, data: result };
-    },
-    onSuccess: (data) => {
-      console.log("Task status updated successfully:", data);
-      queryClient.invalidateQueries(["tasks", numericProjectId]);
-    },
-    onError: (error) => {
-      console.error("Failed to update task status:", error);
-      alert(`Error updating task: ${error.message}`);
-    }
-  });
+  // Handle task click
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setIsFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setTimeout(() => {
+      setSelectedTask(null);
+      queryClient.invalidateQueries(["tasks"]);
+    }, 300);
+  };
 
   // Organize tasks into columns by status when data is available
   useEffect(() => {
     if (tasksData?.data && statusesData?.data) {
       const newColumns = {};
       
-      // Create a column for each status
-      statusesData.data.forEach(status => {
+      // Filter out "Backlog" status from kanban columns
+      const kanbanStatuses = statusesData.data.filter(status => 
+        status.name?.toLowerCase() !== 'backlog'
+      );
+      
+      // Create a column for each non-backlog status
+      kanbanStatuses.forEach(status => {
         if (status && status.id) {
           newColumns[status.id] = {
             id: status.id,
-            name: status.attributes?.name || "Unnamed Status",
+            name: status.name || "Unnamed Status",
             tasks: [],
           };
         }
       });
       
-      // Assign tasks to their status columns
+      // Assign tasks to their status columns (excluding backlog tasks)
       tasksData.data.forEach(task => {
-        // Get the status ID from the task data
-        const statusId = task?.attributes?.taskStatus?.data?.id;
-                         
-        if (statusId && newColumns[statusId]) {
+        const statusId = task.taskStatus?.id;
+        const statusName = task.taskStatus?.name;
+        
+        // Only add tasks that are not in backlog status
+        if (statusId && newColumns[statusId] && statusName?.toLowerCase() !== 'backlog') {
           newColumns[statusId].tasks.push(task);
-        } else {
-          // If task has no status and there are statuses, put it in the first column
-          const firstStatusId = statusesData.data[0]?.id;
-          if (firstStatusId && newColumns[firstStatusId]) {
-            newColumns[firstStatusId].tasks.push(task);
-          }
         }
       });
       
       setColumns(newColumns);
     }
   }, [tasksData, statusesData]);
-
-  // Handle drag start
-  const handleDragStart = (e, task) => {
-    console.log("Dragging task:", task);
-    setDraggingTask(task);
-    e.dataTransfer.setData("taskId", task.id);
-  };
-
-  // Handle drag end
-  const handleDragEnd = () => {
-    setDraggingTask(null);
-  };
-
-  // Handle drop in a column
-  const handleDrop = (e, statusId) => {
-    e.preventDefault();
-    
-    // Get task ID directly from the drag data
-    const taskId = e.dataTransfer.getData("taskId");
-    
-    if (!taskId) {
-      console.error("No task ID in drag data");
-      return;
-    }
-    
-    console.log(`Dropping task ${taskId} into status ${statusId}`);
-    
-    // Update task status
-    updateTaskMutation.mutate({ taskId, statusId });
-  };
-
-  // Handle drag over event
-  const handleDragOver = (e) => {
-    e.preventDefault(); // Necessary to allow dropping
-  };
 
   if (tasksLoading || statusesLoading) {
     return <div className="loading">Loading kanban board...</div>;
@@ -158,46 +99,46 @@ const KanbanBoard = ({ projectId }) => {
 
   return (
     <section className="kanban">
+      {isFormOpen && selectedTask && (
+        <div className="add-task-overlay">
+          <TaskForm
+            task={selectedTask}
+            projectId={numericProjectId}
+            onClose={handleCloseForm}
+          />
+        </div>
+      )}
+
       <div className="kanban__board">
         {Object.values(columns).map((column) => (
-          <div 
-            key={column.id} 
-            className="kanban__column"
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, column.id)}
-          >
+          <div key={column.id} className="kanban__column">
             <div className="kanban__column-header">
               <h3 className="kanban__column-title">{column.name}</h3>
               <span className="kanban__column-count">{column.tasks.length}</span>
             </div>
             <div className="kanban__tasks">
               {column.tasks.map((task) => {
-                // Get task data from attributes
-                const taskData = task?.attributes;
-                const taskId = task?.id;
-                const taskTitle = taskData?.Title;
-                const taskDescription = taskData?.Description;
+                // Get task data - direct access since it's not nested under attributes
+                const taskId = task.id;
+                const taskTitle = task.Title;
+                const taskDescription = task.Description;
                 
                 // Get priority data
-                const priorityData = taskData?.priority?.data?.attributes;
-                const priorityLevel = priorityData?.priorityLevel || "Medium";
-                const priorityColor = priorityData?.color || "#888";
+                const priorityLevel = task.priority?.priorityLevel || "Medium";
+                const priorityColor = task.priority?.color || "#888";
                 
                 // Get assignee data
-                const assigneeData = taskData?.assignee?.data?.attributes;
-                const assigneeName = assigneeData?.displayName;
+                const assigneeName = task.assignee?.displayName;
                 
                 // Get due date
-                const dueDate = taskData?.dueDate;
+                const dueDate = task.dueDate;
                 const formattedDate = dueDate ? new Date(dueDate).toLocaleDateString() : null;
                 
                 return (
                   <div 
                     key={taskId}
-                    className="task-card"
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task)}
-                    onDragEnd={handleDragEnd}
+                    className="task-card task-card--clickable"
+                    onClick={() => handleTaskClick(task)}
                   >
                     <div className="task-card__header">
                       <span 
@@ -219,7 +160,18 @@ const KanbanBoard = ({ projectId }) => {
                       {assigneeName && (
                         <div className="task-card__assignee">
                           <div className="task-card__avatar">
-                            {assigneeName.substring(0, 2).toUpperCase()}
+                            {task.assignee?.avatar?.url ? (
+                              <img 
+                                src={task.assignee.avatar.url.startsWith('http') ? 
+                                  task.assignee.avatar.url : 
+                                  `${API_URL.replace('/api', '')}${task.assignee.avatar.url}`
+                                } 
+                                alt={assigneeName}
+                                className="task-card__avatar-image"
+                              />
+                            ) : (
+                              assigneeName.substring(0, 2).toUpperCase()
+                            )}
                           </div>
                           <span>{assigneeName}</span>
                         </div>

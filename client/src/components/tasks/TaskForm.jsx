@@ -7,41 +7,24 @@ function TaskForm({ task, projectId, onClose }) {
   const queryClient = useQueryClient();
   
   // Extract the project ID from the task if not provided as prop
-  const taskProjectId = task?.project?.id || 
-                       task?.attributes?.project?.data?.id || 
-                       projectId;
+  const taskProjectId = task?.project?.id || projectId;
                        
-  // Extract task data - try to handle all possible formats
-  const taskData = task?.attributes || task;
+  // Extract task data - direct access for Strapi v5
+  const taskData = task;
   
   // Extract status and priority IDs correctly
-  let statusId = null;
-  if (taskData?.taskStatus?.data?.id) {
-    statusId = taskData.taskStatus.data.id;
-  } else if (taskData?.taskStatus?.id) {
-    statusId = taskData.taskStatus.id;
-  } else if (typeof taskData?.taskStatus === 'number') {
-    statusId = taskData.taskStatus;
-  }
-
-  let priorityId = null;
-  if (taskData?.priority?.data?.id) {
-    priorityId = taskData.priority.data.id;
-  } else if (taskData?.priority?.id) {
-    priorityId = taskData.priority.id;
-  } else if (typeof taskData?.priority === 'number') {
-    priorityId = taskData.priority;
-  }
+  const statusId = taskData?.taskStatus?.id;
+  const priorityId = taskData?.priority?.id;
   
   // Initialize form data
   const initialTask = {
-    Title: taskData.Title || "",
-    Description: taskData.Description || "",
-    dueDate: taskData.dueDate ? taskData.dueDate.substring(0, 10) : "",
-    dueTime: taskData.dueDate ? taskData.dueDate.substring(11, 16) : "12:00",
+    Title: taskData?.Title || "",
+    Description: taskData?.Description || "",
+    dueDate: taskData?.dueDate ? taskData.dueDate.substring(0, 10) : "",
+    dueTime: taskData?.dueDate ? taskData.dueDate.substring(11, 16) : "12:00",
     taskStatus: statusId || "",
     priority: priorityId || "",
-    assignee: taskData.assignee?.data?.id || taskData.assignee?.id || "",
+    assignee: taskData?.assignee?.id || "",
     project: taskProjectId
   };
 

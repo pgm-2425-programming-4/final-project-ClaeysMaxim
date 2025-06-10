@@ -90,27 +90,13 @@ const Backlog = ({ tasks, project, projectId }) => {
         <tbody>
           {tasks.map((task) => {
             const id = task.id;
-            const attributes = task.attributes || task;
-            const title = attributes.Title || "No title";
-            const description = attributes.Description || "No description";
-            const dueDate = attributes.dueDate;
+            const title = task.Title || "No title";
+            const description = task.Description || "No description";
+            const dueDate = task.dueDate;
 
-            // Get status and priority names
-            let statusName = "Not set";
-            let priorityName = "Not set";
-
-            const statusData = attributes.taskStatus?.data || attributes.taskStatus;
-            if (statusData) {
-              statusName = statusData.attributes?.name || statusData.name || "Unnamed status";
-            }
-
-            const priorityData = attributes.priority?.data || attributes.priority;
-            if (priorityData) {
-              priorityName = 
-                priorityData.attributes?.priorityLevel || 
-                priorityData.priorityLevel || 
-                "Unnamed priority";
-            }
+            // Get status and priority names - direct access
+            const statusName = task.taskStatus?.name || "Not set";
+            const priorityName = task.priority?.priorityLevel || "Not set";
 
             return (
               <tr key={id} className="task-row">
