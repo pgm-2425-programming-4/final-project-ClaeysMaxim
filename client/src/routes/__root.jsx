@@ -8,9 +8,10 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { fetchProjects, deleteProject } from "../api/projectApi";
+import { fetchProjects, deleteProject, updateProjectStatus } from "../api/projectApi";
 import AddProjectForm from "../components/projects/AddProjectForm";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import ToggleSlider from "../components/ui/ToggleSlider";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -57,6 +58,16 @@ function ProjectSidebar() {
     },
   });
 
+  const updateProjectStatusMutation = useMutation({
+    mutationFn: ({ project, isActive }) => updateProjectStatus(project, isActive),
+    onSuccess: () => {
+      refetchProjects();
+    },
+    onError: (error) => {
+      console.error("Status update failed:", error);
+    },
+  });
+
   const handleAddProjectClick = () => {
     setIsProjectModalOpen(true);
   };
@@ -86,6 +97,10 @@ function ProjectSidebar() {
 
   const handleManageAssigneesClick = () => {
     navigate({ to: '/assignees' });
+  };
+
+  const handleToggleProjectStatus = async (project, newStatus) => {
+    updateProjectStatusMutation.mutate({ project, isActive: newStatus });
   };
 
   if (isLoading)
@@ -136,19 +151,28 @@ function ProjectSidebar() {
                         alt="Project"
                       />
                     </span>
-                    <span>{projectName}</span>
+                    <div className="project-list__content">
+                      <span className="project-list__name">{projectName}</span>
+                    </div>
                   </Link>
-                  <button
-                    className="project-list__delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteProject(project.id, projectName);
-                    }}
-                    disabled={deleteProjectMutation.isPending}
-                    title="Delete project"
-                  >
-                    ×
-                  </button>
+                  <div className="project-list__actions">
+                    <ToggleSlider
+                      checked={project.isActive !== false}
+                      onChange={(newStatus) => handleToggleProjectStatus(project, newStatus)}
+                      disabled={updateProjectStatusMutation.isPending}
+                    />
+                    <button
+                      className="project-list__delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteProject(project.id, projectName);
+                      }}
+                      disabled={deleteProjectMutation.isPending}
+                      title="Delete project"
+                    >
+                      ×
+                    </button>
+                  </div>
                 </li>
               );
             })
