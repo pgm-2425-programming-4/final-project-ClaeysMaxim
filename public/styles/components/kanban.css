@@ -76,7 +76,6 @@
   color: #e53935;
 }
 
-/* Empty column state */
 .kanban__tasks:empty::after {
   content: "No tasks";
   display: block;
