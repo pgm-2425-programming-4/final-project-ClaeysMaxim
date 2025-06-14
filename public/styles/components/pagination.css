@@ -1,5 +1,6 @@
 .pagination {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 10px;
@@ -62,7 +63,7 @@
   color: #4a5568;
   cursor: pointer;
   height: auto;
-  min-width: 60px;
+  min-width: 50px;
 }
 
 .pagination__page-size-select:focus {
@@ -74,4 +75,11 @@
 .pagination__page-size-text {
   font-size: 14px;
   color: #718096;
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    flex-direction: column;
+    gap: 15px;
+  }
 }
