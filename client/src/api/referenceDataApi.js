@@ -1,6 +1,5 @@
 import { API_URL, API_TOKEN } from "../constants/constants";
 
-// Function to fetch all statuses
 export const fetchStatuses = async () => {
   try {
     const response = await fetch(`${API_URL}/statuses?sort=order:asc`, {
@@ -20,7 +19,6 @@ export const fetchStatuses = async () => {
   }
 };
 
-// Function to fetch all priorities
 export const fetchPriorities = async () => {
   try {
     const response = await fetch(`${API_URL}/priorities`, {
@@ -40,7 +38,6 @@ export const fetchPriorities = async () => {
   }
 };
 
-// Function to fetch all team members
 export const fetchTeamMembers = async () => {
   try {
     const response = await fetch(`${API_URL}/team-members?populate[0]=avatar`, {
