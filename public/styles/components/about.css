@@ -153,13 +153,12 @@
 }
 
 .about__contact-link {
-  color: #667eea;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .about__contact-link:hover {
-  color: #764ba2;
+  color: #667eea;
   text-decoration: underline;
 }
 
@@ -178,6 +177,10 @@
 .about__actions .button:hover {
   transform: translateY(-2px);
   background-color: #4c51bf;
+}
+
+.button--primary {
+  text-decoration: none;
 }
 
 @media (max-width: 1024px) {
