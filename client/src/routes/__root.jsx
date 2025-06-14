@@ -128,7 +128,9 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose }) {
       />
       <aside className={`sidebar ${isMobileMenuOpen ? 'sidebar--mobile-open' : ''}`}>
         <div className="sidebar__header">
-          <h1 className="sidebar__title">TaskFlow</h1>
+          <Link to="/" onClick={handleHomeLinkClick}>
+            <h1 className="sidebar__title">TaskFlow</h1>
+          </Link>
         </div>
         <nav className="sidebar__nav">
           <Link
