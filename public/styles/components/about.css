@@ -1,4 +1,3 @@
-/* About page styles */
 .about {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -181,7 +180,6 @@
   background-color: #4c51bf;
 }
 
-/* Responsive styles */
 @media (max-width: 1024px) {
   .about__section {
     max-width: none;
