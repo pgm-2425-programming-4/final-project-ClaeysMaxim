@@ -38,6 +38,7 @@
   font-size: 14px;
   background-color: #f5f7fa;
   transition: background-color 0.2s;
+  flex: 1;
 }
 
 .view-toggle__button:hover {
@@ -51,4 +52,15 @@
 
 .view-toggle__button--active:hover {
   background-color: #2980b9;
+}
+
+@media (max-width: 768px) {
+  .header__view-toggle {
+    width: 100%;
+  }
+  
+  .view-toggle__button {
+    flex: 1;
+    padding: 12px 8px;
+  }
 }
