@@ -13,11 +13,12 @@
   font-size: 20px;
   font-weight: 600;
   margin: 0;
+  color: white;
 }
 
 .backlog__subtitle {
   font-size: 14px;
-  color: #666;
+  color: #e3e3e3;
   margin: 5px 0 0 0;
   font-weight: normal;
 }
