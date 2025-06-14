@@ -56,7 +56,7 @@ function AboutComponent() {
                 <strong>Email:</strong>{" "}
                 <a
                   href="mailto:maxim.claeys@student.arteveldehs.be"
-                  className="about__contact-link"
+                  className="about__contact-link" target="_blank"
                 >
                   maxim.claeys@student.arteveldehs.be
                 </a>

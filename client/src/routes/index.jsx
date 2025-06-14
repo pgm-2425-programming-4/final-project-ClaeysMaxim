@@ -3,14 +3,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 function HomeComponent() {
   return (
     <div className="home-page">
-      <header className="header">
-        <div className="header__project">
-          <h1 className="header__title">Welcome to TaskFlow</h1>
-          <span className="header__subtitle">
-            Your project management solution
-          </span>
+      <div className="home__hero">
+        <div className="home__hero-content">
+          <h1 className="home__title">Welcome to TaskFlow</h1>
+          <p className="home__subtitle">
+            Your modern project management solution
+          </p>
         </div>
-      </header>
+      </div>
 
       <div className="home-content">
         <div className="features-grid">

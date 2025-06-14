@@ -1,12 +1,4 @@
-/* Responsive styles */
 @media (max-width: 1024px) {
-  .sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-    padding: 10px;
-  }
-
   .main {
     margin-left: 0;
   }
@@ -50,6 +42,12 @@
     display: block;
     overflow-x: auto;
   }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+    min-height: 100vh;
+  }
 }
 
 @media (max-width: 480px) {
@@ -61,8 +59,13 @@
   .backlog__filter {
     flex-direction: column;
   }
-
+}
   .pagination {
+    flex-direction: row;
+    gap: 15px;
+  }
+
+  .backlog__filter {
     flex-direction: column;
   }
-}
+

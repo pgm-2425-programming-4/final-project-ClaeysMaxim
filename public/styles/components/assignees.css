@@ -19,7 +19,6 @@
   object-fit: cover;
 }
 
-/* Avatar styles for task tables */
 .task-table .task-card__avatar {
   width: 32px;
   height: 32px;

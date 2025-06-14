@@ -1,10 +1,9 @@
-/* Simple delete button */
 .project-list__item {
   position: relative;
 }
 
 .project-list__delete {
-  position: static; /* Remove absolute positioning since it's now in actions container */
+  position: static;
   background: none;
   border: none;
   color: #bdc3c7;

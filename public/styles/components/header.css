@@ -1,7 +1,6 @@
-/* Header styles */
 .header {
-  background-color: #fff;
-  border-bottom: 1px solid #e1e4e8;
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding: 20px 30px;
   display: flex;
   justify-content: space-between;
@@ -11,10 +10,12 @@
 .header__title {
   font-size: 24px;
   font-weight: 600;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header__subtitle {
-  color: #7f8c8d;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
 }
 
@@ -24,7 +25,6 @@
   gap: 20px;
 }
 
-/* View toggle */
 .header__view-toggle {
   display: flex;
   border: 1px solid #e1e4e8;
@@ -40,6 +40,7 @@
   font-size: 14px;
   background-color: #f5f7fa;
   transition: background-color 0.2s;
+  flex: 1;
 }
 
 .view-toggle__button:hover {
@@ -53,4 +54,15 @@
 
 .view-toggle__button--active:hover {
   background-color: #2980b9;
+}
+
+@media (max-width: 768px) {
+  .header__view-toggle {
+    width: 100%;
+  }
+  
+  .view-toggle__button {
+    flex: 1;
+    padding: 12px 8px;
+  }
 }
