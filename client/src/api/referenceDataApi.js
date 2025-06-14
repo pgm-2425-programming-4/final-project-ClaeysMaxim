@@ -43,7 +43,7 @@ export const fetchPriorities = async () => {
 // Function to fetch all team members
 export const fetchTeamMembers = async () => {
   try {
-    const response = await fetch(`${API_URL}/team-members`, {
+    const response = await fetch(`${API_URL}/team-members?populate[0]=avatar`, {
       headers: {
         Authorization: `Bearer ${API_TOKEN}`,
       },
