@@ -142,8 +142,7 @@ const KanbanBoard = ({ projectId }) => {
                   >
                     <div className="task-card__header">
                       <span 
-                        className="priority-badge"
-                        style={{ backgroundColor: priorityColor }}
+                        className={`priority-badge priority-badge--${priorityLevel.toLowerCase()}`}
                       >
                         {priorityLevel}
                       </span>
