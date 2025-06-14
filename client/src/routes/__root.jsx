@@ -23,14 +23,8 @@ const queryClient = new QueryClient({
   },
 });
 
-function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose }) {
+function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose, onAddProject, onDeleteProject, confirmDialog, onConfirmDelete, onCancelDelete }) {
   const navigate = useNavigate();
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState({
-    isOpen: false,
-    projectId: null,
-    projectName: "",
-  });
   const queryClient = useQueryClient();
 
   const {
@@ -46,15 +40,12 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose }) {
   const deleteProjectMutation = useMutation({
     mutationFn: deleteProject,
     onSuccess: async () => {
-      // Force immediate refetch to ensure fresh data
       await refetchProjects();
-
-      // Reset dialog
-      setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
+      onCancelDelete();
     },
     onError: (error) => {
       console.error("Delete failed:", error);
-      setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
+      onCancelDelete();
     },
   });
 
@@ -69,30 +60,17 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose }) {
   });
 
   const handleAddProjectClick = () => {
-    setIsProjectModalOpen(true);
-  };
-
-  const handleCloseProjectModal = () => {
-    setIsProjectModalOpen(false);
-    refetchProjects();
+    onAddProject();
   };
 
   const handleDeleteProject = (projectId, projectName) => {
-    setConfirmDialog({
-      isOpen: true,
-      projectId,
-      projectName,
-    });
+    onDeleteProject(projectId, projectName);
   };
 
   const handleConfirmDelete = () => {
     if (confirmDialog.projectId) {
       deleteProjectMutation.mutate(confirmDialog.projectId);
     }
-  };
-
-  const handleCancelDelete = () => {
-    setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
   };
 
   const handleManageAssigneesClick = () => {
@@ -242,16 +220,12 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose }) {
           </div>
         </nav>
 
-        {isProjectModalOpen && (
-          <AddProjectForm onClose={handleCloseProjectModal} />
-        )}
-
         <ConfirmDialog
           isOpen={confirmDialog.isOpen}
           title="Delete Project"
           message={`Are you sure you want to delete "${confirmDialog.projectName}"? This action cannot be undone.`}
           onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
+          onCancel={onCancelDelete}
         />
       </aside>
     </>
@@ -260,6 +234,12 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose }) {
 
 function RootComponent() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    projectId: null,
+    projectName: "",
+  });
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -267,6 +247,30 @@ function RootComponent() {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleAddProject = () => {
+    setIsProjectModalOpen(true);
+  };
+
+  const handleCloseProjectModal = () => {
+    setIsProjectModalOpen(false);
+  };
+
+  const handleDeleteProject = (projectId, projectName) => {
+    setConfirmDialog({
+      isOpen: true,
+      projectId,
+      projectName,
+    });
+  };
+
+  const handleConfirmDelete = () => {
+    // This will be handled by the mutation in ProjectSidebar
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDialog({ isOpen: false, projectId: null, projectName: "" });
   };
 
   return (
@@ -286,10 +290,20 @@ function RootComponent() {
         <ProjectSidebar 
           isMobileMenuOpen={isMobileMenuOpen} 
           onMobileMenuClose={closeMobileMenu}
+          onAddProject={handleAddProject}
+          onDeleteProject={handleDeleteProject}
+          confirmDialog={confirmDialog}
+          onConfirmDelete={handleConfirmDelete}
+          onCancelDelete={handleCancelDelete}
         />
         <main className="main">
           <Outlet />
         </main>
+
+        {/* Modal is now rendered at the root level */}
+        {isProjectModalOpen && (
+          <AddProjectForm onClose={handleCloseProjectModal} />
+        )}
       </div>
       {import.meta.env.DEV && <TanStackRouterDevtools />}
     </QueryClientProvider>
