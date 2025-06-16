@@ -61,6 +61,7 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose, onAddProject, onD
 
   const handleAddProjectClick = () => {
     onAddProject();
+    onMobileMenuClose(); // Close mobile menu when opening project modal
   };
 
   const handleDeleteProject = (projectId, projectName) => {
@@ -75,6 +76,7 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose, onAddProject, onD
 
   const handleManageAssigneesClick = () => {
     navigate({ to: '/assignees' });
+    onMobileMenuClose(); // Close mobile menu when navigating to assignees
   };
 
   const handleToggleProjectStatus = async (project, newStatus) => {
