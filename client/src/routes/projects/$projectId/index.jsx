@@ -1,19 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjects } from "../../../api/projectApi";
-import PaginatedBacklog from "../../../components/backlog/PaginatedBacklog";
 import KanbanBoard from "../../../components/kanban/KanbanBoard";
 import AddTaskForm from "../../../components/tasks/AddTaskForm";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 function ProjectDetailComponent() {
   const { projectId } = Route.useParams();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [activeView, setActiveView] = useState("backlog");
-
-  // Element refs for the view sections
-  const backlogRef = useRef(null);
-  const kanbanRef = useRef(null);
 
   // Convert projectId to number for API calls
   const numericProjectId = parseInt(projectId, 10);
@@ -39,24 +33,6 @@ function ProjectDetailComponent() {
       ? "Active Project"
       : "Inactive Project"
     : "Project not found";
-
-  // Toggle between backlog and kanban views
-  const toggleView = (view) => {
-    setActiveView(view);
-  };
-
-  // Update the view visibility when activeView changes
-  useEffect(() => {
-    if (backlogRef.current && kanbanRef.current) {
-      if (activeView === "backlog") {
-        backlogRef.current.style.display = "block";
-        kanbanRef.current.style.display = "none";
-      } else {
-        backlogRef.current.style.display = "none";
-        kanbanRef.current.style.display = "block";
-      }
-    }
-  }, [activeView]);
 
   const handleAddTaskClick = () => {
     setIsTaskModalOpen(true);
@@ -90,20 +66,20 @@ function ProjectDetailComponent() {
         </div>
         <div className="header__actions">
           <div className="header__view-toggle">
-            <button
-              className={`view-toggle__button ${activeView === "backlog" ? "view-toggle__button--active" : ""}`}
-              onClick={() => toggleView("backlog")}
-              data-view="backlog"
-            >
-              Backlog
-            </button>
-            <button
-              className={`view-toggle__button ${activeView === "kanban" ? "view-toggle__button--active" : ""}`}
-              onClick={() => toggleView("kanban")}
-              data-view="kanban"
+            <Link
+              to="/projects/$projectId"
+              params={{ projectId }}
+              className="view-toggle__button view-toggle__button--active"
             >
               Kanban
-            </button>
+            </Link>
+            <Link
+              to="/projects/$projectId/backlog"
+              params={{ projectId }}
+              className="view-toggle__button"
+            >
+              Backlog
+            </Link>
           </div>
           <button
             className="button button--primary"
@@ -118,15 +94,7 @@ function ProjectDetailComponent() {
         </div>
       </header>
 
-      {/* Backlog View */}
-      <div ref={backlogRef} style={{ display: activeView === "backlog" ? "block" : "none" }}>
-        <PaginatedBacklog projectId={numericProjectId} project={activeProject} />
-      </div>
-
-      {/* Kanban View */}
-      <div ref={kanbanRef} style={{ display: activeView === "kanban" ? "block" : "none" }}>
-        <KanbanBoard projectId={numericProjectId} />
-      </div>
+      <KanbanBoard projectId={numericProjectId} />
 
       {isTaskModalOpen && (
         <AddTaskForm
@@ -138,6 +106,7 @@ function ProjectDetailComponent() {
     </>
   );
 }
+
 
 export const Route = createFileRoute("/projects/$projectId/")({
   component: ProjectDetailComponent,
