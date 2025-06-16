@@ -9,26 +9,22 @@ function ProjectBacklogComponent() {
   const { projectId } = Route.useParams();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
-  // Fetch the projects data to find the active project
   const { data: projectsData } = useQuery({
     queryKey: ["projects"],
     queryFn: fetchProjects,
   });
 
-  // Find the active project from the projects list
   const activeProject = projectsData?.data?.find(
     (project) => project.id === parseInt(projectId),
   );
 
-  const projectName = activeProject?.ProjectName || "No Project Selected";
-
-  // Only show status if we have an active project
-  const isActive = activeProject?.isActive;
+  const projectName = activeProject?.attributes?.ProjectName || activeProject?.ProjectName || "Loading...";
+  const isActive = activeProject?.attributes?.isActive ?? activeProject?.isActive;
   const statusText = activeProject
     ? isActive
       ? "Active Project"
       : "Inactive Project"
-    : "";
+    : "Project not found";
 
   const handleAddTaskClick = () => {
     setIsTaskModalOpen(true);
@@ -48,21 +44,18 @@ function ProjectBacklogComponent() {
         <div className="header__actions">
           <div className="header__view-toggle">
             <Link
-              to="/projects/$projectId/backlog"
-              params={{ projectId }}
-              className="view-toggle__button"
-              activeProps={{
-                className: "view-toggle__button view-toggle__button--active",
-              }}
-            >
-              Backlog
-            </Link>
-            <Link
               to="/projects/$projectId"
               params={{ projectId }}
               className="view-toggle__button"
             >
               Kanban
+            </Link>
+            <Link
+              to="/projects/$projectId/backlog"
+              params={{ projectId }}
+              className="view-toggle__button view-toggle__button--active"
+            >
+              Backlog
             </Link>
           </div>
           <button
@@ -77,7 +70,7 @@ function ProjectBacklogComponent() {
         </div>
       </header>
 
-      <PaginatedBacklog projectId={parseInt(projectId)} />
+      <PaginatedBacklog projectId={parseInt(projectId)} project={activeProject} />
 
       {isTaskModalOpen && (
         <AddTaskForm
@@ -93,3 +86,4 @@ function ProjectBacklogComponent() {
 export const Route = createFileRoute("/projects/$projectId/backlog")({
   component: ProjectBacklogComponent,
 });
+
