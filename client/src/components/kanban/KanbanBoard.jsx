@@ -141,11 +141,22 @@ const KanbanBoard = ({ projectId }) => {
                     onClick={() => handleTaskClick(task)}
                   >
                     <div className="task-card__header">
-                      <span 
-                        className={`priority-badge priority-badge--${priorityLevel.toLowerCase()}`}
-                      >
-                        {priorityLevel}
-                      </span>
+                      <div className="task-card__header-left">
+                        <span 
+                          className={`priority-badge priority-badge--${priorityLevel.toLowerCase()}`}
+                        >
+                          {priorityLevel}
+                        </span>
+                      </div>
+                      <div className="task-card__header-right">
+                        <div className={`task-card__labels ${!task.labels?.length ? 'task-card__labels--empty' : ''}`}>
+                          {task.labels && task.labels.map((label) => (
+                            <span key={label.id} className="label-badge">
+                              {label.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                     <h4 className="task-card__title">{taskTitle}</h4>
                     {taskDescription && (

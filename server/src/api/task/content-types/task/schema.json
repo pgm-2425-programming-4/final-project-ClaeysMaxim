@@ -42,6 +42,12 @@
       "relation": "manyToOne",
       "target": "api::team-member.team-member",
       "inversedBy": "tasks"
+    },
+    "labels": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::label.label",
+      "inversedBy": "tasks"
     }
   }
 }

@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createTask } from "../../api/taskApi";
 import { fetchStatuses, fetchPriorities } from "../../api/referenceDataApi";
+import { fetchLabels } from "../../api/labelApi";
 
 function TaskForm({ onClose, currentProjectId, projects }) {
   const queryClient = useQueryClient();
+  const [showLabelOptions, setShowLabelOptions] = useState(false);
 
   // Form state with default values
   const [formData, setFormData] = useState({
@@ -15,6 +17,7 @@ function TaskForm({ onClose, currentProjectId, projects }) {
     project: currentProjectId || "",
     taskStatus: "",
     priority: "",
+    labels: [],
   });
 
   const [error, setError] = useState("");
@@ -28,6 +31,11 @@ function TaskForm({ onClose, currentProjectId, projects }) {
   const { data: prioritiesData, isLoading: prioritiesLoading } = useQuery({
     queryKey: ["priorities"],
     queryFn: fetchPriorities,
+  });
+
+  const { data: labelsData, isLoading: labelsLoading } = useQuery({
+    queryKey: ["labels"],
+    queryFn: fetchLabels,
   });
 
   // Set default status and priority once data is loaded
@@ -85,6 +93,27 @@ function TaskForm({ onClose, currentProjectId, projects }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleLabelToggle = (labelId) => {
+    setFormData(prev => {
+      const current = prev.labels;
+      const isSelected = current.includes(labelId);
+
+      if (isSelected) {
+        return {
+          ...prev,
+          labels: current.filter(id => id !== labelId)
+        };
+      } else if (current.length < 2) {
+        return {
+          ...prev,
+          labels: [...current, labelId]
+        };
+      }
+
+      return prev;
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -114,6 +143,7 @@ function TaskForm({ onClose, currentProjectId, projects }) {
         project: parseInt(formData.project),
         taskStatus: formData.taskStatus ? parseInt(formData.taskStatus) : undefined,
         priority: formData.priority ? parseInt(formData.priority) : undefined,
+        labels: formData.labels.length > 0 ? formData.labels : undefined,
       },
     };
 
@@ -255,6 +285,49 @@ function TaskForm({ onClose, currentProjectId, projects }) {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Labels selection */}
+            <div className="add-task-form__group">
+              <label className="add-task-form__label">Labels (max 2)</label>
+              <button
+                type="button"
+                className="button button--small"
+                onClick={() => setShowLabelOptions(prev => !prev)}
+                style={{ marginBottom: "0.5rem" }}
+              >
+                {showLabelOptions ? "Verberg labels" : "Kies labels"}
+              </button>
+
+              {showLabelOptions && (
+                <div style={{ paddingLeft: "0.5rem" }}>
+                  {labelsData?.data?.map((label) => {
+                    const isSelected = formData.labels.includes(label.id);
+                    const isDisabled = !isSelected && formData.labels.length >= 2;
+
+                    return (
+                      <label
+                        key={label.id}
+                        style={{
+                          display: "block",
+                          marginBottom: "0.25rem",
+                          opacity: isDisabled ? 0.5 : 1,
+                          cursor: isDisabled ? "not-allowed" : "pointer"
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleLabelToggle(label.id)}
+                          disabled={isDisabled}
+                          style={{ marginRight: "0.5rem" }}
+                        />
+                        {label.name}
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Form buttons */}

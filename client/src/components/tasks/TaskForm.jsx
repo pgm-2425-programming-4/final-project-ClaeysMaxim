@@ -2,21 +2,16 @@ import { useState, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { updateTask } from "../../api/taskApi";
 import { fetchStatuses, fetchPriorities, fetchTeamMembers } from "../../api/referenceDataApi";
+import { fetchLabels } from "../../api/labelApi";
 
 function TaskForm({ task, projectId, onClose }) {
   const queryClient = useQueryClient();
   
-  // Extract the project ID from the task if not provided as prop
   const taskProjectId = task?.project?.id || projectId;
-                       
-  // Extract task data - direct access for Strapi v5
   const taskData = task;
-  
-  // Extract status and priority IDs correctly
   const statusId = taskData?.taskStatus?.id;
   const priorityId = taskData?.priority?.id;
-  
-  // Initialize form data
+
   const initialTask = {
     Title: taskData?.Title || "",
     Description: taskData?.Description || "",
@@ -25,33 +20,37 @@ function TaskForm({ task, projectId, onClose }) {
     taskStatus: statusId || "",
     priority: priorityId || "",
     assignee: taskData?.assignee?.id || "",
-    project: taskProjectId
+    project: taskProjectId,
+    labels: taskData?.labels?.map(label => label.id) || [],
   };
 
   const [formData, setFormData] = useState(initialTask);
   const [error, setError] = useState("");
+  const [showLabelOptions, setShowLabelOptions] = useState(false);
 
-  // Query for statuses using same pattern as AddTaskForm
   const { data: statusesData, isLoading: statusesLoading } = useQuery({
     queryKey: ["statuses"],
     queryFn: fetchStatuses,
   });
-  
+
   const { data: prioritiesData, isLoading: prioritiesLoading } = useQuery({
     queryKey: ["priorities"],
     queryFn: fetchPriorities,
   });
-  
+
   const { data: teamMembersData, isLoading: teamMembersLoading } = useQuery({
     queryKey: ["teamMembers"],
     queryFn: fetchTeamMembers
   });
 
+  const { data: labelsData, isLoading: labelsLoading } = useQuery({
+    queryKey: ["labels"],
+    queryFn: fetchLabels
+  });
+
   const updateTaskMutation = useMutation({
-    mutationFn: ({ taskData, updateData }) => {
-      return updateTask(taskData, updateData);
-    },
-    onSuccess: (result) => {
+    mutationFn: ({ taskData, updateData }) => updateTask(taskData, updateData),
+    onSuccess: () => {
       queryClient.invalidateQueries(["tasks"]);
       onClose();
     },
@@ -68,6 +67,27 @@ function TaskForm({ task, projectId, onClose }) {
     }));
   };
 
+  const handleLabelToggle = (labelId) => {
+    setFormData(prev => {
+      const current = prev.labels;
+      const isSelected = current.includes(labelId);
+
+      if (isSelected) {
+        return {
+          ...prev,
+          labels: current.filter(id => id !== labelId)
+        };
+      } else if (current.length < 2) {
+        return {
+          ...prev,
+          labels: [...current, labelId]
+        };
+      }
+
+      return prev;
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -76,13 +96,11 @@ function TaskForm({ task, projectId, onClose }) {
       return;
     }
 
-    // Format date and time for Strapi
     let fullDueDate = null;
     if (formData.dueDate) {
       fullDueDate = `${formData.dueDate}T${formData.dueTime || '12:00'}:00.000Z`;
     }
 
-    // Create the update data using EXACTLY the structure from KanbanBoard
     const submitData = {
       Title: formData.Title,
       Description: formData.Description || "",
@@ -90,26 +108,18 @@ function TaskForm({ task, projectId, onClose }) {
       project: formData.project ? parseInt(formData.project, 10) : null,
     };
 
-    // Add relations if they are set - using the same pattern as KanbanBoard
-    if (formData.taskStatus) {
-      submitData.taskStatus = parseInt(formData.taskStatus, 10);
-    }
-    
-    if (formData.priority) {
-      submitData.priority = parseInt(formData.priority, 10);
-    }
-    
-    if (formData.assignee) {
-      submitData.assignee = parseInt(formData.assignee, 10);
-    }
+    if (formData.taskStatus) submitData.taskStatus = parseInt(formData.taskStatus, 10);
+    if (formData.priority) submitData.priority = parseInt(formData.priority, 10);
+    if (formData.assignee) submitData.assignee = parseInt(formData.assignee, 10);
+    if (formData.labels.length > 0) submitData.labels = formData.labels;
 
-    updateTaskMutation.mutate({ 
-      taskData: task,  // Pass the entire task object
-      updateData: submitData 
+    updateTaskMutation.mutate({
+      taskData: task,
+      updateData: submitData
     });
   };
 
-  if (statusesLoading || prioritiesLoading || teamMembersLoading) {
+  if (statusesLoading || prioritiesLoading || teamMembersLoading || labelsLoading) {
     return (
       <div className="add-task">
         <div className="add-task__header">
@@ -132,9 +142,8 @@ function TaskForm({ task, projectId, onClose }) {
 
       <div className="add-task__body">
         {error && <div className="add-task-form__error">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
-          {/* Title field */}
           <div className="add-task-form__group">
             <label className="add-task-form__label" htmlFor="Title">Title *</label>
             <input
@@ -148,7 +157,6 @@ function TaskForm({ task, projectId, onClose }) {
             />
           </div>
 
-          {/* Description field */}
           <div className="add-task-form__group">
             <label className="add-task-form__label" htmlFor="Description">Description</label>
             <textarea
@@ -160,7 +168,6 @@ function TaskForm({ task, projectId, onClose }) {
             ></textarea>
           </div>
 
-          {/* Date and time fields */}
           <div className="add-task-form__row">
             <div className="add-task-form__group add-task-form__group--half">
               <label className="add-task-form__label" htmlFor="dueDate">Due Date</label>
@@ -173,7 +180,6 @@ function TaskForm({ task, projectId, onClose }) {
                 onChange={handleChange}
               />
             </div>
-
             <div className="add-task-form__group add-task-form__group--half">
               <label className="add-task-form__label" htmlFor="dueTime">Time</label>
               <input
@@ -187,7 +193,6 @@ function TaskForm({ task, projectId, onClose }) {
             </div>
           </div>
 
-          {/* Status selection - COPY FROM ADDTASKFORM */}
           <div className="add-task-form__row">
             <div className="add-task-form__group add-task-form__group--half">
               <label className="add-task-form__label" htmlFor="taskStatus">Status</label>
@@ -199,19 +204,11 @@ function TaskForm({ task, projectId, onClose }) {
                 onChange={handleChange}
               >
                 <option value="">-- Select Status --</option>
-                {statusesLoading ? (
-                  <option value="">Loading statuses...</option>
-                ) : !statusesData?.data?.length ? (
-                  <option value="">No statuses available</option>
-                ) : (
-                  [...statusesData.data]
-                    .sort((a, b) => (a.attributes?.order || 0) - (b.attributes?.order || 0))
-                    .map((status) => (
-                      <option key={status.id} value={status.id}>
-                        {status.attributes?.name || status.name || `Status ${status.id}`}
-                      </option>
-                    ))
-                )}
+                {statusesData?.data?.map((status) => (
+                  <option key={status.id} value={status.id}>
+                    {status.attributes?.name || `Status ${status.id}`}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -225,22 +222,15 @@ function TaskForm({ task, projectId, onClose }) {
                 onChange={handleChange}
               >
                 <option value="">-- Select Priority --</option>
-                {prioritiesLoading ? (
-                  <option value="">Loading priorities...</option>
-                ) : !prioritiesData?.data?.length ? (
-                  <option value="">No priorities available</option>
-                ) : (
-                  prioritiesData.data.map((priority) => (
-                    <option key={priority.id} value={priority.id}>
-                      {priority.attributes?.priorityLevel || priority.priorityLevel || `Priority ${priority.id}`}
-                    </option>
-                  ))
-                )}
+                {prioritiesData?.data?.map((priority) => (
+                  <option key={priority.id} value={priority.id}>
+                    {priority.attributes?.priorityLevel || `Priority ${priority.id}`}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
-          {/* Assignee selection */}
           <div className="add-task-form__group">
             <label className="add-task-form__label" htmlFor="assignee">Assignee</label>
             <select
@@ -251,12 +241,55 @@ function TaskForm({ task, projectId, onClose }) {
               onChange={handleChange}
             >
               <option value="">-- Unassigned --</option>
-              {teamMembersData?.data && teamMembersData.data.map((member) => (
+              {teamMembersData?.data?.map((member) => (
                 <option key={member.id} value={member.id}>
-                  {member.attributes?.displayName || member.displayName || `Member ${member.id}`}
+                  {member.attributes?.displayName || `Member ${member.id}`}
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* LABELS DROPDOWN-STYLE MULTISELECT */}
+          <div className="add-task-form__group">
+            <label className="add-task-form__label">Labels (max 2)</label>
+            <button
+              type="button"
+              className="button button--small"
+              onClick={() => setShowLabelOptions(prev => !prev)}
+              style={{ marginBottom: "0.5rem" }}
+            >
+              {showLabelOptions ? "Verberg labels" : "Kies labels"}
+            </button>
+
+            {showLabelOptions && (
+              <div style={{ paddingLeft: "0.5rem" }}>
+                {labelsData?.data?.map((label) => {
+                  const isSelected = formData.labels.includes(label.id);
+                  const isDisabled = !isSelected && formData.labels.length >= 2;
+
+                  return (
+                    <label
+                      key={label.id}
+                      style={{
+                        display: "block",
+                        marginBottom: "0.25rem",
+                        opacity: isDisabled ? 0.5 : 1,
+                        cursor: isDisabled ? "not-allowed" : "pointer"
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleLabelToggle(label.id)}
+                        disabled={isDisabled}
+                        style={{ marginRight: "0.5rem" }}
+                      />
+                      {label.name}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="add-task__footer">

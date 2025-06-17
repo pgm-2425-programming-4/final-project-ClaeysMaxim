@@ -2,7 +2,7 @@ import { API_URL, API_TOKEN } from "../constants/constants";
 
 export const fetchTasks = async (page = 1, pageSize = 10, projectId = null) => {
   try {
-    let url = `${API_URL}/tasks?populate[0]=project&populate[1]=taskStatus&populate[2]=priority&populate[3]=assignee&populate[4]=assignee.avatar&pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+    let url = `${API_URL}/tasks?populate[0]=project&populate[1]=taskStatus&populate[2]=priority&populate[3]=assignee&populate[4]=assignee.avatar&populate[5]=labels&pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
     
     if (projectId) {
       url += `&filters[project][id][$eq]=${projectId}`;
