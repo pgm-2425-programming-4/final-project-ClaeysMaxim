@@ -1,6 +1,4 @@
 import { createRootRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-// Remove this static import to avoid build issues
-// import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useState } from "react";
 import {
   QueryClient,
@@ -322,24 +320,8 @@ function RootComponent() {
           <AddProjectForm onClose={handleCloseProjectModal} />
         )}
       </div>
-      {import.meta.env.DEV && <LazyDevtools />}
     </QueryClientProvider>
   );
-}
-
-// Add this component to lazy load devtools only in development
-function LazyDevtools() {
-  const [Devtools, setDevtools] = useState(null);
-
-  useState(() => {
-    import("@tanstack/react-router-devtools").then((mod) => {
-      setDevtools(() => mod.TanStackRouterDevtools);
-    }).catch(() => {
-      // Silently fail if devtools aren't available
-    });
-  }, []);
-
-  return Devtools ? <Devtools /> : null;
 }
 
 export const Route = createRootRoute({
