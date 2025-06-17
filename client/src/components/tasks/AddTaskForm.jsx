@@ -17,12 +17,13 @@ function TaskForm({ onClose, currentProjectId, projects }) {
     project: currentProjectId || "",
     taskStatus: "",
     priority: "",
+    assignee: "",
     labels: [],
   });
 
   const [error, setError] = useState("");
 
-  // Query for statuses and priorities
+  // Query for statuses, priorities, labels, and team members
   const { data: statusesData, isLoading: statusesLoading } = useQuery({
     queryKey: ["statuses"],
     queryFn: fetchStatuses,
@@ -36,6 +37,11 @@ function TaskForm({ onClose, currentProjectId, projects }) {
   const { data: labelsData, isLoading: labelsLoading } = useQuery({
     queryKey: ["labels"],
     queryFn: fetchLabels,
+  });
+
+  const { data: teamMembersData, isLoading: teamMembersLoading } = useQuery({
+    queryKey: ["teamMembers"],
+    queryFn: fetchTeamMembers,
   });
 
   // Set default status and priority once data is loaded
@@ -144,6 +150,7 @@ function TaskForm({ onClose, currentProjectId, projects }) {
         taskStatus: formData.taskStatus ? parseInt(formData.taskStatus) : undefined,
         priority: formData.priority ? parseInt(formData.priority) : undefined,
         labels: formData.labels.length > 0 ? formData.labels : undefined,
+        assignee: formData.assignee ? parseInt(formData.assignee) : undefined,
       },
     };
 
@@ -328,6 +335,25 @@ function TaskForm({ onClose, currentProjectId, projects }) {
                   })}
                 </div>
               )}
+            </div>
+
+            {/* Add assignee field */}
+            <div className="add-task-form__group">
+              <label className="add-task-form__label" htmlFor="assignee">Assignee</label>
+              <select
+                className="add-task-form__control"
+                id="assignee"
+                name="assignee"
+                value={formData.assignee}
+                onChange={handleChange}
+              >
+                <option value="">-- Unassigned --</option>
+                {teamMembersData?.data?.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.displayName || `Member ${member.id}`}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Form buttons */}

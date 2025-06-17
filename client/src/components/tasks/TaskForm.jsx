@@ -243,7 +243,7 @@ function TaskForm({ task, projectId, onClose }) {
               <option value="">-- Unassigned --</option>
               {teamMembersData?.data?.map((member) => (
                 <option key={member.id} value={member.id}>
-                  {member.attributes?.displayName || `Member ${member.id}`}
+                  {member.displayName || `Member ${member.id}`}
                 </option>
               ))}
             </select>
