@@ -57,8 +57,28 @@ export const fetchTeamMembers = async () => {
   }
 };
 
+export const fetchLabels = async () => {
+  try {
+    const response = await fetch(`${API_URL}/labels`, {
+      headers: {
+        Authorization: `Bearer ${API_TOKEN}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch labels: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching labels:", error);
+    throw error;
+  }
+};
+
 export default {
   fetchStatuses,
   fetchPriorities,
   fetchTeamMembers,
+  fetchLabels,
 };
