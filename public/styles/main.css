@@ -4,6 +4,7 @@
 @import "components/icons.css";
 
 @import "components/sidebar.css";
+@import "components/mobile-menu.css";
 @import "components/header.css";
 @import "components/buttons.css";
 @import "components/backlog.css";
@@ -12,7 +13,14 @@
 @import "components/task-card.css";
 @import "components/badges.css";
 @import "components/pagination.css";
-
+@import "components/add-task-form.css";
+@import "components/delete-button.css";
+@import "components/confirm-dialog.css";
+@import "components/home.css";
+@import "components/about.css";
+@import "components/assignees.css";
+@import "components/toggle-slider.css";
+@import "components/labels.css";
 @import "components/responsive.css";
 
 @font-face {

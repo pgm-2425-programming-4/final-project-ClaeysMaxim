@@ -1,0 +1,276 @@
+.about {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.about__hero {
+  color: white;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.about__hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.about__title {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.about__subtitle {
+  font-size: 20px;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+.about__content {
+  max-width: 1200px;
+  margin: -40px auto 0;
+  padding: 0 20px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.about__section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-bottom: 30px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about__card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.about__card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.about__card-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.about__card-icon img {
+  width: 30px;
+  height: 30px;
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+}
+
+.about__card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.about__card-text {
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 14px;
+  flex-grow: 1;
+}
+
+.about__feature-list {
+  list-style: none;
+  text-align: left;
+  color: #64748b;
+  margin: 0 auto;
+  padding: 0;
+  font-size: 14px;
+  display: inline-block;
+}
+
+.about__feature-list li {
+  padding: 8px 0;
+  position: relative;
+  padding-left: 25px;
+}
+
+.about__feature-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.about__contact-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 30px auto;
+}
+
+.about__contact-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.about__contact-info {
+  display: grid;
+  gap: 15px;
+}
+
+.about__contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #4a5568;
+}
+
+.about__contact-item strong {
+  min-width: 100px;
+  color: #2c3e50;
+}
+
+.about__contact-link {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.about__contact-link:hover {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.about__actions {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.about__actions .button {
+  font-size: 16px;
+  padding: 15px 30px;
+  background-color: #5a67d8;
+  border: none;
+}
+
+.about__actions .button:hover {
+  transform: translateY(-2px);
+  background-color: #4c51bf;
+}
+
+.button--primary {
+  text-decoration: none;
+}
+
+@media (max-width: 1024px) {
+  .about__section {
+    max-width: none;
+  }
+  
+  .about__card-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .about__card-icon img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .about__card-title {
+    font-size: 22px;
+  }
+
+  .about__card-text,
+  .about__feature-list {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about__title {
+    font-size: 36px;
+  }
+
+  .about__subtitle {
+    font-size: 18px;
+  }
+
+  .about__section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .about__contact-card {
+    padding: 30px 20px;
+  }
+
+  .about__contact-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .about__contact-item strong {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .about__hero {
+    padding: 40px 0;
+  }
+
+  .about__title {
+    font-size: 28px;
+  }
+
+  .about__subtitle {
+    font-size: 16px;
+  }
+
+  .about__content {
+    margin-top: -20px;
+    padding: 0 10px 30px;
+  }
+  
+  .about__card {
+    padding: 20px 15px;
+  }
+  
+  .about__card-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .about__card-icon img {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .about__actions .button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}

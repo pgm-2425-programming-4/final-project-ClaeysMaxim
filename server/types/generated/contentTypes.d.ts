@@ -373,6 +373,32 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLabelLabel extends Struct.CollectionTypeSchema {
+  collectionName: 'labels';
+  info: {
+    displayName: 'Label';
+    pluralName: 'labels';
+    singularName: 'label';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::label.label'> &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    tasks: Schema.Attribute.Relation<'manyToMany', 'api::task.task'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPriorityPriority extends Struct.CollectionTypeSchema {
   collectionName: 'priorities';
   info: {
@@ -381,7 +407,7 @@ export interface ApiPriorityPriority extends Struct.CollectionTypeSchema {
     singularName: 'priority';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     color: Schema.Attribute.String;
@@ -411,7 +437,7 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
     singularName: 'project';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -427,7 +453,6 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     ProjectName: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    task: Schema.Attribute.Relation<'oneToOne', 'api::task.task'>;
     tasks: Schema.Attribute.Relation<'oneToMany', 'api::task.task'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -438,15 +463,15 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
 export interface ApiStatusStatus extends Struct.CollectionTypeSchema {
   collectionName: 'statuses';
   info: {
+    description: '';
     displayName: 'Status';
     pluralName: 'statuses';
     singularName: 'status';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
-    color: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -474,11 +499,11 @@ export interface ApiTaskTask extends Struct.CollectionTypeSchema {
     singularName: 'task';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     assignee: Schema.Attribute.Relation<
-      'oneToOne',
+      'manyToOne',
       'api::team-member.team-member'
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -486,13 +511,14 @@ export interface ApiTaskTask extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     Description: Schema.Attribute.Text;
     dueDate: Schema.Attribute.DateTime;
+    labels: Schema.Attribute.Relation<'manyToMany', 'api::label.label'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::task.task'> &
       Schema.Attribute.Private;
-    priority: Schema.Attribute.Relation<'oneToOne', 'api::priority.priority'>;
-    project: Schema.Attribute.Relation<'oneToOne', 'api::project.project'>;
+    priority: Schema.Attribute.Relation<'manyToOne', 'api::priority.priority'>;
+    project: Schema.Attribute.Relation<'manyToOne', 'api::project.project'>;
     publishedAt: Schema.Attribute.DateTime;
-    taskStatus: Schema.Attribute.Relation<'oneToOne', 'api::status.status'>;
+    taskStatus: Schema.Attribute.Relation<'manyToOne', 'api::status.status'>;
     Title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -509,7 +535,7 @@ export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
     singularName: 'team-member';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     avatar: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
@@ -524,7 +550,7 @@ export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    task: Schema.Attribute.Relation<'oneToOne', 'api::task.task'>;
+    tasks: Schema.Attribute.Relation<'oneToMany', 'api::task.task'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1040,6 +1066,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::label.label': ApiLabelLabel;
       'api::priority.priority': ApiPriorityPriority;
       'api::project.project': ApiProjectProject;
       'api::status.status': ApiStatusStatus;

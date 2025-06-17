@@ -8,7 +8,7 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "Title": {
@@ -23,25 +23,31 @@
     },
     "project": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::project.project",
-      "inversedBy": "task"
+      "inversedBy": "tasks"
     },
     "taskStatus": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::status.status"
     },
     "priority": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::priority.priority"
     },
     "assignee": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::team-member.team-member",
-      "inversedBy": "task"
+      "inversedBy": "tasks"
+    },
+    "labels": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::label.label",
+      "inversedBy": "tasks"
     }
   }
 }

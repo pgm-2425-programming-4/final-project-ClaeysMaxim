@@ -1,12 +1,10 @@
-/* Responsive styles */
 @media (max-width: 1024px) {
-  .app {
-    flex-direction: column;
+  .main {
+    margin-left: 0;
   }
 
-  .sidebar {
-    width: 100%;
-    padding: 10px;
+  .app {
+    flex-direction: column;
   }
 
   .kanban__board {
@@ -44,6 +42,12 @@
     display: block;
     overflow-x: auto;
   }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+    min-height: 100vh;
+  }
 }
 
 @media (max-width: 480px) {
@@ -55,8 +59,13 @@
   .backlog__filter {
     flex-direction: column;
   }
-
+}
   .pagination {
+    flex-direction: row;
+    gap: 15px;
+  }
+
+  .backlog__filter {
     flex-direction: column;
   }
-}
+

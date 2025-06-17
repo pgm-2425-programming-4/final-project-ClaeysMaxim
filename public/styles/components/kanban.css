@@ -1,52 +1,90 @@
-/* Kanban Board styles */
 .kanban {
-  padding: 30px;
+  padding: 1rem;
   overflow-x: auto;
+  margin-right: 1rem;
 }
 
 .kanban__board {
   display: flex;
-  gap: 20px;
-  min-height: calc(100vh - 180px);
+  min-height: 500px;
+  gap: 1rem;
 }
 
 .kanban__column {
-  background-color: #f1f5f9;
+  flex: 0 0 300px;
+  background-color: #f5f5f5;
   border-radius: 8px;
-  min-width: 300px;
-  width: 300px;
-  padding: 15px;
   display: flex;
   flex-direction: column;
+  padding: 1rem;
+  min-height: 500px;
 }
 
 .kanban__column-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .kanban__column-title {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
+  margin: 0;
+  color: #2d3748;
 }
 
 .kanban__column-count {
-  background-color: #e2e8f0;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 10px;
+  background-color: #e0e0e0;
+  border-radius: 12px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  color: #4a5568;
+  min-width: 24px;
+  text-align: center;
 }
 
 .kanban__tasks {
   flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  overflow-y: auto;
+  gap: 0.75rem;
+  min-height: 40vh;
+  max-height: calc(80vh - 200px); 
+  padding-right: 8px; 
+}
+
+.kanban .task-card {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.kanban .task-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.loading, .error, .empty-message {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+.error {
+  color: #e53935;
+}
+
+.kanban__tasks:empty::after {
+  content: "No tasks";
+  display: block;
+  text-align: center;
+  color: #a0aec0;
+  font-style: italic;
+  padding: 2rem 1rem;
 }

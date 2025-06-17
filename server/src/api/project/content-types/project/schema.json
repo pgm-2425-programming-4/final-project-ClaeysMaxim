@@ -8,7 +8,7 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "ProjectName": {
@@ -23,11 +23,6 @@
     "tasks": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::task.task"
-    },
-    "task": {
-      "type": "relation",
-      "relation": "oneToOne",
       "target": "api::task.task",
       "mappedBy": "project"
     }

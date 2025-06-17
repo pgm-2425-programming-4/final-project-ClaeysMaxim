@@ -1,0 +1,50 @@
+/* Label badge component */
+.label-badge {
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.label-badge--small {
+  font-size: 9px;
+  padding: 1px 4px;
+}
+
+.label-badge--large {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+/* Task card labels container */
+.task-card__labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.task-card__labels--empty {
+  display: none;
+}
+
+/* Task card header layout */
+.task-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.task-card__header-left {
+  flex-shrink: 0;
+}
+
+.task-card__header-right {
+  flex-shrink: 1;
+  min-width: 0;
+}
