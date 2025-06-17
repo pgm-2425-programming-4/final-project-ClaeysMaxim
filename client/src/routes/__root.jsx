@@ -79,6 +79,11 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose, onAddProject, onD
     onMobileMenuClose(); // Close mobile menu when navigating to assignees
   };
 
+  const handleManageLabelsClick = () => {
+    navigate({ to: '/labels' });
+    onMobileMenuClose(); // Close mobile menu when navigating to labels
+  };
+
   const handleToggleProjectStatus = async (project, newStatus) => {
     updateProjectStatusMutation.mutate({ project, isActive: newStatus });
   };
@@ -210,9 +215,18 @@ function ProjectSidebar({ isMobileMenuOpen, onMobileMenuClose, onAddProject, onD
             </button>
             
             <button
-              className="button button--secondary sidebar__manage-assignees"
+              className="button button--secondary sidebar__manage-button"
+              onClick={handleManageLabelsClick}
+            >
+              <span className="icon">
+                <img src="/styles/images/icons/label.svg" alt="Labels" />
+              </span>
+              Manage Labels
+            </button>
+            
+            <button
+              className="button button--secondary sidebar__manage-button"
               onClick={handleManageAssigneesClick}
-              style={{ marginTop: "10px" }}
             >
               <span className="icon">
                 <img src="/styles/images/icons/team.svg" alt="Team" />
@@ -324,3 +338,4 @@ export const Route = createRootRoute({
     </div>
   ),
 });
+
