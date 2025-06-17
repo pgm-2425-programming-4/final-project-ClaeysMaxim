@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createTask } from "../../api/taskApi";
-import { fetchStatuses, fetchPriorities } from "../../api/referenceDataApi";
+import { fetchStatuses, fetchPriorities, fetchTeamMembers } from "../../api/referenceDataApi";
 import { fetchLabels } from "../../api/labelApi";
+import { fetchProjects } from "../../api/projectApi";
 
 function TaskForm({ onClose, currentProjectId, projects }) {
   const queryClient = useQueryClient();
@@ -234,19 +235,12 @@ function TaskForm({ onClose, currentProjectId, projects }) {
                   value={formData.taskStatus}
                   onChange={handleChange}
                 >
-                  {statusesLoading ? (
-                    <option value="">Loading statuses...</option>
-                  ) : !statusesData?.data?.length ? (
-                    <option value="">No statuses available</option>
-                  ) : (
-                    [...statusesData.data]
-                      .sort((a, b) => (a.order || 0) - (b.order || 0))
-                      .map((status) => (
-                        <option key={status.id} value={status.id}>
-                          {status.name || `Status ${status.id}`}
-                        </option>
-                      ))
-                  )}
+                  <option value="">-- Select Status --</option>
+                  {statusesData?.data?.map((status) => (
+                    <option key={status.id} value={status.id}>
+                      {status.name || `Status ${status.id}`}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -259,17 +253,12 @@ function TaskForm({ onClose, currentProjectId, projects }) {
                   value={formData.priority}
                   onChange={handleChange}
                 >
-                  {prioritiesLoading ? (
-                    <option value="">Loading priorities...</option>
-                  ) : !prioritiesData?.data?.length ? (
-                    <option value="">No priorities available</option>
-                  ) : (
-                    prioritiesData.data.map((priority) => (
-                      <option key={priority.id} value={priority.id}>
-                        {priority.priorityLevel || `Priority ${priority.id}`}
-                      </option>
-                    ))
-                  )}
+                  <option value="">-- Select Priority --</option>
+                  {prioritiesData?.data?.map((priority) => (
+                    <option key={priority.id} value={priority.id}>
+                      {priority.priorityLevel || `Priority ${priority.id}`}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

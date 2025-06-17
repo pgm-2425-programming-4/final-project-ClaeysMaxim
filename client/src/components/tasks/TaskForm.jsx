@@ -206,7 +206,7 @@ function TaskForm({ task, projectId, onClose }) {
                 <option value="">-- Select Status --</option>
                 {statusesData?.data?.map((status) => (
                   <option key={status.id} value={status.id}>
-                    {status.attributes?.name || `Status ${status.id}`}
+                    {status.name || `Status ${status.id}`}
                   </option>
                 ))}
               </select>
@@ -224,7 +224,7 @@ function TaskForm({ task, projectId, onClose }) {
                 <option value="">-- Select Priority --</option>
                 {prioritiesData?.data?.map((priority) => (
                   <option key={priority.id} value={priority.id}>
-                    {priority.attributes?.priorityLevel || `Priority ${priority.id}`}
+                    {priority.priorityLevel || `Priority ${priority.id}`}
                   </option>
                 ))}
               </select>
