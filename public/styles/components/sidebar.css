@@ -55,17 +55,19 @@
   margin-top: auto;
   padding-top: 20px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.sidebar__manage-assignees {
+.sidebar__actions .button {
   text-decoration: none !important;
   width: 100%;
 }
 
-.sidebar__manage-assignees:hover {
+.sidebar__actions .button:hover {
   text-decoration: none !important;
 }
-
 
 .sidebar__home-link,
 .sidebar__about-link {
