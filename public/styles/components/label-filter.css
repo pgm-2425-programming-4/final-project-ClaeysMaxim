@@ -1,0 +1,65 @@
+.label-filter {
+  margin-right: 15px;
+  position: relative;
+}
+
+.label-filter__button {
+  padding: 8px 12px;
+  border: 1px solid #e1e4e8;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  color: #333;
+  min-width: 120px;
+  cursor: pointer;
+}
+
+.label-filter__button:hover {
+  border-color: #3498db;
+}
+
+.label-filter__options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  margin-top: 4px;
+  padding: 8px;
+  border: 1px solid #e1e4e8;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 100%;
+  white-space: nowrap;
+}
+
+.label-filter__option {
+  display: block;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+.label-filter__option:last-child {
+  margin-bottom: 0;
+}
+
+.label-filter__checkbox {
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .label-filter {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  
+  .label-filter__options {
+    position: fixed;
+    top: auto;
+    left: 10px;
+    right: 10px;
+    min-width: auto;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
