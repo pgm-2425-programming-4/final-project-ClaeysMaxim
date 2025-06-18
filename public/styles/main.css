@@ -21,6 +21,7 @@
 @import "components/assignees.css";
 @import "components/toggle-slider.css";
 @import "components/labels.css";
+@import "components/label-filter.css";
 @import "components/responsive.css";
 
 @font-face {

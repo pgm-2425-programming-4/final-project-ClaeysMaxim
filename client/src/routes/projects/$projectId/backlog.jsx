@@ -2,16 +2,25 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjects } from "../../../api/projectApi";
+import { fetchLabels } from "../../../api/labelApi";
 import PaginatedBacklog from "../../../components/backlog/PaginatedBacklog";
 import AddTaskForm from "../../../components/tasks/AddTaskForm";
 
 function ProjectBacklogComponent() {
   const { projectId } = Route.useParams();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState([]);
+  const [showLabelOptions, setShowLabelOptions] = useState(false);
 
   const { data: projectsData } = useQuery({
     queryKey: ["projects"],
     queryFn: fetchProjects,
+  });
+
+  // Fetch labels for filter
+  const { data: labelsData } = useQuery({
+    queryKey: ["labels"],
+    queryFn: fetchLabels,
   });
 
   const activeProject = projectsData?.data?.find(
@@ -34,6 +43,28 @@ function ProjectBacklogComponent() {
     setIsTaskModalOpen(false);
   };
 
+  const handleLabelToggle = (labelDocumentId) => {
+    setSelectedLabels(prev => {
+      const isSelected = prev.includes(labelDocumentId);
+      if (isSelected) {
+        return prev.filter(id => id !== labelDocumentId);
+      } else {
+        return [...prev, labelDocumentId];
+      }
+    });
+  };
+
+  const getFilterButtonText = () => {
+    if (selectedLabels.length === 0) {
+      return "Filter labels";
+    } else if (selectedLabels.length === 1) {
+      const label = labelsData?.data?.find(l => l.documentId === selectedLabels[0]);
+      return label?.name || "1 label";
+    } else {
+      return `${selectedLabels.length} labels`;
+    }
+  };
+
   return (
     <>
       <header className="header">
@@ -42,6 +73,34 @@ function ProjectBacklogComponent() {
           <span className="header__subtitle">{statusText}</span>
         </div>
         <div className="header__actions">
+          <div className="label-filter">
+            <button
+              type="button"
+              className="label-filter__button"
+              onClick={() => setShowLabelOptions(prev => !prev)}
+            >
+              {getFilterButtonText()}
+            </button>
+
+            {showLabelOptions && (
+              <div className="label-filter__options">
+                {labelsData?.data?.map((label) => (
+                  <label
+                    key={label.documentId}
+                    className="label-filter__option"
+                  >
+                    <input
+                      type="checkbox"
+                      className="label-filter__checkbox"
+                      checked={selectedLabels.includes(label.documentId)}
+                      onChange={() => handleLabelToggle(label.documentId)}
+                    />
+                    {label.name}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="header__view-toggle">
             <Link
               to="/projects/$projectId"
@@ -70,7 +129,11 @@ function ProjectBacklogComponent() {
         </div>
       </header>
 
-      <PaginatedBacklog projectId={parseInt(projectId)} project={activeProject} />
+      <PaginatedBacklog 
+        projectId={parseInt(projectId)} 
+        project={activeProject} 
+        labelFilter={selectedLabels}
+      />
 
       {isTaskModalOpen && (
         <AddTaskForm

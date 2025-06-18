@@ -5,7 +5,7 @@ import { PAGE_SIZE_OPTIONS } from "../../constants/constants";
 import Backlog from "./Backlog";
 import Pagination from "./Pagination";
 
-const PaginatedBacklog = ({ projectId, project }) => {
+const PaginatedBacklog = ({ projectId, project, labelFilter }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -25,10 +25,20 @@ const PaginatedBacklog = ({ projectId, project }) => {
     enabled: !!numericProjectId,
   });
 
-  // Filter tasks to only show backlog status
+  // Filter tasks to only show backlog status and apply label filter
   const backlogTasks = data?.data?.filter((task) => {
     const statusName = task.taskStatus?.name;
-    return statusName?.toLowerCase() === "backlog";
+    const isBacklog = statusName?.toLowerCase() === "backlog";
+    
+    if (!isBacklog) return false;
+    
+    // Apply label filter if selected
+    if (!labelFilter || labelFilter.length === 0) return true;
+    
+    // Check if task has any of the selected labels
+    return task.labels?.some(label => 
+      labelFilter.includes(label.documentId) || labelFilter.includes(label.id)
+    );
   }) || [];
 
   // Client-side pagination
