@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjects } from "../../../api/projectApi";
+import { fetchLabels } from "../../../api/labelApi";
 import KanbanBoard from "../../../components/kanban/KanbanBoard";
 import AddTaskForm from "../../../components/tasks/AddTaskForm";
 import { useState } from "react";
@@ -8,6 +9,8 @@ import { useState } from "react";
 function ProjectDetailComponent() {
   const { projectId } = Route.useParams();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState([]);
+  const [showLabelOptions, setShowLabelOptions] = useState(false);
 
   // Convert projectId to number for API calls
   const numericProjectId = parseInt(projectId, 10);
@@ -16,6 +19,12 @@ function ProjectDetailComponent() {
   const { data: projectsData } = useQuery({
     queryKey: ["projects"],
     queryFn: fetchProjects,
+  });
+
+  // Fetch labels for filter
+  const { data: labelsData } = useQuery({
+    queryKey: ["labels"],
+    queryFn: fetchLabels,
   });
 
   // Find the active project from the projects list
@@ -42,6 +51,28 @@ function ProjectDetailComponent() {
     setIsTaskModalOpen(false);
   };
 
+  const handleLabelToggle = (labelDocumentId) => {
+    setSelectedLabels(prev => {
+      const isSelected = prev.includes(labelDocumentId);
+      if (isSelected) {
+        return prev.filter(id => id !== labelDocumentId);
+      } else {
+        return [...prev, labelDocumentId];
+      }
+    });
+  };
+
+  const getFilterButtonText = () => {
+    if (selectedLabels.length === 0) {
+      return "Filter labels";
+    } else if (selectedLabels.length === 1) {
+      const label = labelsData?.data?.find(l => l.documentId === selectedLabels[0]);
+      return label?.name || "1 label";
+    } else {
+      return `${selectedLabels.length} labels`;
+    }
+  };
+
   if (!activeProject && projectsData?.data) {
     return (
       <div className="project-not-found">
@@ -65,6 +96,34 @@ function ProjectDetailComponent() {
           <span className="header__subtitle">{statusText}</span>
         </div>
         <div className="header__actions">
+          <div className="label-filter">
+            <button
+              type="button"
+              className="label-filter__button"
+              onClick={() => setShowLabelOptions(prev => !prev)}
+            >
+              {getFilterButtonText()}
+            </button>
+
+            {showLabelOptions && (
+              <div className="label-filter__options">
+                {labelsData?.data?.map((label) => (
+                  <label
+                    key={label.documentId}
+                    className="label-filter__option"
+                  >
+                    <input
+                      type="checkbox"
+                      className="label-filter__checkbox"
+                      checked={selectedLabels.includes(label.documentId)}
+                      onChange={() => handleLabelToggle(label.documentId)}
+                    />
+                    {label.name}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="header__view-toggle">
             <Link
               to="/projects/$projectId"
@@ -94,7 +153,7 @@ function ProjectDetailComponent() {
         </div>
       </header>
 
-      <KanbanBoard projectId={numericProjectId} />
+      <KanbanBoard projectId={numericProjectId} labelFilter={selectedLabels} />
 
       {isTaskModalOpen && (
         <AddTaskForm
@@ -106,7 +165,6 @@ function ProjectDetailComponent() {
     </>
   );
 }
-
 
 export const Route = createFileRoute("/projects/$projectId/")({
   component: ProjectDetailComponent,
