@@ -5,7 +5,7 @@ import { fetchStatuses } from "../../api/referenceDataApi";
 import { API_URL } from "../../constants/constants";
 import TaskForm from "../tasks/TaskForm";
 
-const KanbanBoard = ({ projectId }) => {
+const KanbanBoard = ({ projectId, labelFilter }) => {
   const queryClient = useQueryClient();
   const [columns, setColumns] = useState({});
   const [selectedTask, setSelectedTask] = useState(null);
@@ -77,13 +77,25 @@ const KanbanBoard = ({ projectId }) => {
         
         // Only add tasks that are not in backlog status
         if (statusId && newColumns[statusId] && statusName?.toLowerCase() !== 'backlog') {
-          newColumns[statusId].tasks.push(task);
+          // Apply label filter if selected
+          if (!labelFilter || labelFilter.length === 0) {
+            // No filter applied, show all tasks
+            newColumns[statusId].tasks.push(task);
+          } else {
+            // Check if task has any of the selected labels
+            const hasSelectedLabel = task.labels?.some(label => 
+              labelFilter.includes(label.documentId) || labelFilter.includes(label.id)
+            );
+            if (hasSelectedLabel) {
+              newColumns[statusId].tasks.push(task);
+            }
+          }
         }
       });
       
       setColumns(newColumns);
     }
-  }, [tasksData, statusesData]);
+  }, [tasksData, statusesData, labelFilter]);
 
   if (tasksLoading || statusesLoading) {
     return <div className="loading">Loading kanban board...</div>;
